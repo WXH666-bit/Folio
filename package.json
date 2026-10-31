@@ -1,0 +1,36 @@
+{
+  "name": "folio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Page-tagged document search for agents: index a folder once, then grep it for a few hundred tokens instead of reading it for tens of thousands.",
+  "bin": {
+    "folio": "./dist/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsc -p tsconfig.json && tsx tests/parse.test.ts && tsx tests/store.test.ts && tsx tests/search.test.ts && tsx tests/docx.test.ts && tsx tests/revise.test.ts && tsx tests/formats.test.ts && tsx tests/retrieval.test.ts && node tests/ab-stat.test.mjs && tsx tests/mcp-smoke.ts",
+    "dev": "tsx src/cli.ts",
+    "start": "tsx src/cli.ts start",
+    "index": "tsx src/cli.ts index",
+    "fixtures": "D:\\python3.11\\python.exe tests/make-fixtures.py"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "chokidar": "^6.0.0",
+    "gpt-tokenizer": "^4.1.0",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.4.299",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

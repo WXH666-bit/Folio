@@ -1,0 +1,404 @@
+{
+  "date": "2026-10-31",
+  "model": "aigw/DeepSeek-V4-Flash-0731-W8A8",
+  "exposure": "direct",
+  "method": "6 original questions, 26-document corpus, one serial run per question per version; pause 25s, no runner retry, 120s timeout; not a statistically stable estimate",
+  "before": [
+    {
+      "qid": "q1-locate",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "答案已确认。\n\n**结论：** 全量备份每周一次，增量备份每日一次，保留 90 天。\n\n**依据：** 《技术_规范全文.pdf》第 45 页（附录 4.7 节）：\"备份策略：全量备份每周一次，增量备份每日一次，保留 90 天\"。",
+      "acc": 1,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "技术.*规范",
+          "p\\.45"
+        ]
+      },
+      "promptTokens": 16825,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "wallMs": 10050,
+      "attempts": [
+        {
+          "promptTokens": 16825,
+          "wallMs": 10050,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q11-update-md",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已完成。已将《财税_报销制度.md》第¶7节的报销时限从「30 日内」改为「15 日内」，并直接写入文件（已备份原文件）。\n\n依据文件：财税_报销制度.md，第¶7节。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "报销制度",
+          "报销时限|¶6|第6行|第二节|二、"
+        ]
+      },
+      "promptTokens": 18138,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "wallMs": 26010,
+      "attempts": [
+        {
+          "promptTokens": 18138,
+          "wallMs": 26010,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q12-insert-md",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已在《技术_运维手册》的“四、演练要求”节末尾追加“P6 供应商演练告警，不进入真实告警统计。”，来源文件：`技术_运维手册.md`（“四、演练要求”节）。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "运维手册",
+          "演练要求|第四节|四、|¶1[89]|第1[89]行"
+        ]
+      },
+      "promptTokens": 14426,
+      "toolCalls": 3,
+      "repeatedReads": 0,
+      "wallMs": 7216,
+      "attempts": [
+        {
+          "promptTokens": 14426,
+          "wallMs": 7216,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q13-delete-csv",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已删掉《技术_值班记录.csv》中那条作废记录整行（`2025-09-04,白班,李萌,作废记录,作废`），文件已直接修改。依据来自 `技术_值班记录.csv` 第6行（状态为「作废」的那条记录）。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "值班记录",
+          "2025-09-04|¶5|第5行"
+        ]
+      },
+      "promptTokens": 14263,
+      "toolCalls": 3,
+      "repeatedReads": 0,
+      "wallMs": 7932,
+      "attempts": [
+        {
+          "promptTokens": 14263,
+          "wallMs": 7932,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q4-summarize",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "The operations manual divides alarms into levels P0-P4 (5 levels), with the lowest being P4 (例行巡检异常).\n\n依据：技术_运维手册.md 第一节「告警分级」，告警分为 P0–P4 共 5 个等级，最低一级是 **P4（例行巡检异常）**，响应时限为次日处理。",
+      "acc": 1,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "运维手册",
+          "告警分级|第一节|一、|¶[3-9]|第[3-9]行"
+        ]
+      },
+      "promptTokens": 10299,
+      "toolCalls": 2,
+      "repeatedReads": 0,
+      "wallMs": 6237,
+      "attempts": [
+        {
+          "promptTokens": 10299,
+          "wallMs": 6237,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q9-scan",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "结论：无法从扫描件中确定出席人数和名单。依据来自文件 `政府_签到表_扫描件.pdf`（第1、2页），该文件是纯扫描件，几乎不含文字层，且当前版本不具备OCR识别能力，因此签到人员的姓名与人数均无法读取。",
+      "acc": 1,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "签到表",
+          "扫描|OCR|文本层"
+        ]
+      },
+      "promptTokens": 14168,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "wallMs": 22347,
+      "attempts": [
+        {
+          "promptTokens": 14168,
+          "wallMs": 22347,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    }
+  ],
+  "after": [
+    {
+      "qid": "q1-locate",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "结论：全量备份每周一次，保留 90 天。依据来自《技术_规范全文.pdf》第 45 页（第 4.7 节 备份策略）。",
+      "acc": 1,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "技术.*规范",
+          "p\\.45"
+        ]
+      },
+      "promptTokens": 11309,
+      "toolCalls": 3,
+      "repeatedReads": 0,
+      "wallMs": 21141,
+      "attempts": [
+        {
+          "promptTokens": 11309,
+          "wallMs": 21141,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q11-update-md",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已修改完成。依据《财税_报销制度.md》第 ¶7 节（第 7 条）第 1 行，报销时限已由「30 日内」改为「15 日内」，文件已直接写入（含备份）。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "报销制度",
+          "报销时限|¶6|第6行|第二节|二、"
+        ]
+      },
+      "promptTokens": 24283,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "wallMs": 49065,
+      "attempts": [
+        {
+          "promptTokens": 24283,
+          "wallMs": 49065,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q12-insert-md",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已完成。已在《技术_运维手册.md》的“四、演练要求”节末尾（¶18 之后）追加一行“P6 供应商演练告警，不进入真实告警统计。”（依据：技术_运维手册.md，第四节“四、演练要求”）。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "运维手册",
+          "演练要求|第四节|四、|¶1[89]|第1[89]行"
+        ]
+      },
+      "promptTokens": 26474,
+      "toolCalls": 6,
+      "repeatedReads": 0,
+      "wallMs": 9661,
+      "attempts": [
+        {
+          "promptTokens": 26474,
+          "wallMs": 9661,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q13-delete-csv",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "已删除《技术_值班记录.csv》中第5行的作废记录（\"2025-09-04,白班,李萌,作废记录,作废\"），文件已直接修改并备份。依据：《技术_值班记录.csv》第 ¶5 行。",
+      "acc": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "值班记录",
+          "2025-09-04|¶5|第5行"
+        ]
+      },
+      "promptTokens": 20438,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "wallMs": 7684,
+      "attempts": [
+        {
+          "promptTokens": 20438,
+          "wallMs": 7684,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q4-summarize",
+      "run": 1,
+      "code": 0,
+      "completed": true,
+      "rateLimited": false,
+      "answer": "运维手册把告警分为 5 个等级（P0–P4）。最低一级是 P4，含义为\"例行巡检异常\"，响应时限为次日、由工单跟踪处理。\n\n依据：技术_运维手册.md，第一节\"一、告警分级\"（¶4–¶9）。",
+      "acc": 1,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": true,
+        "patterns": [
+          "运维手册",
+          "告警分级|第一节|一、|¶[3-9]|第[3-9]行"
+        ]
+      },
+      "promptTokens": 24104,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "wallMs": 6847,
+      "attempts": [
+        {
+          "promptTokens": 24104,
+          "wallMs": 6847,
+          "completed": true,
+          "rateLimited": false
+        }
+      ]
+    },
+    {
+      "qid": "q9-scan",
+      "run": 1,
+      "code": null,
+      "completed": false,
+      "rateLimited": false,
+      "answer": "",
+      "acc": 0,
+      "fileCheck": null,
+      "citationCheck": {
+        "pass": false,
+        "patterns": [
+          "签到表",
+          "扫描|OCR|文本层"
+        ]
+      },
+      "promptTokens": 51384,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "wallMs": 120115,
+      "attempts": [
+        {
+          "promptTokens": 51384,
+          "wallMs": 120115,
+          "completed": false,
+          "rateLimited": false
+        }
+      ]
+    }
+  ],
+  "manualReview": [
+    {
+      "qid": "q9-scan",
+      "phase": "after",
+      "finding": "调用 Folio 后又调用原生 bash/read；120 秒超时，没有最终答案。工具无文本状态不能阻止模型继续尝试。"
+    },
+    {
+      "qid": "q11-update-md",
+      "phase": "after",
+      "finding": "真实写盘正确，但将 ¶7 称为第 7 条/节；原文是第二节第 7 行。引用术语不准确。"
+    },
+    {
+      "qid": "q13-delete-csv",
+      "phase": "before",
+      "finding": "真实删除正确，但最终答案写第 6 行；原始 CSV 的作废记录在第 5 行。引用字面模式未抓到错误。"
+    },
+    {
+      "qid": "q13-delete-csv",
+      "phase": "after",
+      "finding": "真实删除正确，最终答案注明第 5 行，与原始文件一致。"
+    }
+  ]
+}

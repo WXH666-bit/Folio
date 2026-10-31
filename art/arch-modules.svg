@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 520" width="1040" height="520" font-family="'Microsoft YaHei','PingFang SC',sans-serif">
+  <defs>
+    <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6f6a5b"/></marker>
+    <style>
+      .chip{fill:#fff;stroke:#b9ad86}
+      .chip2{fill:#efead9;stroke:#b9ad86}
+      .band{fill:none;stroke:#d6d1c2;stroke-dasharray:3 3}
+      .lbl{font-size:12px;fill:#1f1f1c;font-weight:700}
+      .sub{font-size:9.5px;fill:#8b8471;letter-spacing:.1em}
+      .cap{font-size:10px;fill:#6f6a5b}
+      .mod{font-size:11.5px;fill:#2b2b28;font-family:ui-monospace,Consolas,monospace}
+    </style>
+  </defs>
+
+  <!-- 层 1 入口 -->
+  <rect class="band" x="120" y="24" width="880" height="78"/>
+  <text x="16" y="52" class="lbl">入口层</text>
+  <text x="16" y="68" class="sub">ENTRY</text>
+  <rect class="chip2" x="140" y="42" width="200" height="42"/>
+  <text x="154" y="60" class="mod">cli.ts</text>
+  <text x="154" y="75" class="cap">start / index / watch / serve</text>
+  <rect class="chip2" x="356" y="42" width="200" height="42"/>
+  <text x="370" y="60" class="mod">mcp.ts</text>
+  <text x="370" y="75" class="cap">7 个工具 + 协议握手</text>
+  <rect class="chip" x="572" y="42" width="200" height="42"/>
+  <text x="586" y="60" class="mod">report.ts</text>
+  <text x="586" y="75" class="cap">离线：算 token 账</text>
+
+  <!-- 层 2 能力 -->
+  <rect class="band" x="120" y="126" width="880" height="78"/>
+  <text x="16" y="154" class="lbl">能力层</text>
+  <text x="16" y="170" class="sub">CAPABILITY</text>
+  <rect class="chip" x="140" y="144" width="160" height="42"/>
+  <text x="154" y="162" class="mod">search.ts</text>
+  <text x="154" y="177" class="cap">词面 AND / regex</text>
+  <rect class="chip" x="312" y="144" width="160" height="42"/>
+  <text x="326" y="162" class="mod">format.ts</text>
+  <text x="326" y="177" class="cap">命中 → 紧凑文本</text>
+  <rect class="chip" x="484" y="144" width="160" height="42"/>
+  <text x="498" y="162" class="mod">indexer.ts</text>
+  <text x="498" y="177" class="cap">增量建索引</text>
+  <rect class="chip" x="656" y="144" width="160" height="42"/>
+  <text x="670" y="162" class="mod">watch.ts</text>
+  <text x="670" y="177" class="cap">chokidar 监听</text>
+  <rect class="chip" x="828" y="144" width="160" height="42"/>
+  <text x="842" y="162" class="mod">outline.ts</text>
+  <text x="842" y="177" class="cap">章节树 / 定位</text>
+
+  <!-- 层 3 存储 -->
+  <rect class="band" x="120" y="228" width="880" height="78"/>
+  <text x="16" y="256" class="lbl">存储层</text>
+  <text x="16" y="272" class="sub">STORE</text>
+  <rect class="chip" x="140" y="246" width="200" height="42"/>
+  <text x="154" y="264" class="mod">store.ts</text>
+  <text x="154" y="279" class="cap">manifest / index 读写</text>
+  <rect class="chip" x="356" y="246" width="200" height="42"/>
+  <text x="370" y="264" class="mod">lock.ts</text>
+  <text x="370" y="279" class="cap">跨进程互斥</text>
+  <rect class="chip" x="572" y="246" width="200" height="42"/>
+  <text x="586" y="264" class="mod">revisions.ts</text>
+  <text x="586" y="279" class="cap">申请单 + apply</text>
+<!-- 层 4 解析 -->
+  <rect class="band" x="120" y="330" width="880" height="78"/>
+  <text x="16" y="358" class="lbl">解析层</text>
+  <text x="16" y="374" class="sub">PARSE</text>
+  <rect class="chip" x="140" y="348" width="240" height="42"/>
+  <text x="154" y="366" class="mod">parse.ts</text>
+  <text x="154" y="381" class="cap">pdf · docx · text（行拼装）</text>
+  <rect class="chip" x="396" y="348" width="240" height="42"/>
+  <text x="410" y="366" class="mod">parse-office.ts</text>
+  <text x="410" y="381" class="cap">pptx · xlsx</text>
+  <rect class="chip" x="652" y="348" width="240" height="42"/>
+  <text x="666" y="366" class="mod">write-docx.ts</text>
+  <text x="666" y="381" class="cap">改 docx 段落（保格式）</text>
+
+  <!-- 层 5 基础 -->
+  <rect class="band" x="120" y="432" width="880" height="64"/>
+  <text x="16" y="460" class="lbl">基础层</text>
+  <text x="16" y="476" class="sub">BASE</text>
+  <rect class="chip2" x="140" y="446" width="752" height="36"/>
+  <text x="154" y="469" class="mod">types.ts</text>
+  <text x="270" y="469" class="cap">纯类型：DocKind / Unit / ParsedDoc / DocEntry / Hit / OutlineNode —— 不 import 任何模块</text>
+
+  <!-- 依赖箭头（只画跨层主干，避免线团） -->
+  <g stroke="#6f6a5b" stroke-width="1.1" fill="none">
+    <path d="M240 84 V144" marker-end="url(#m1)"/>
+    <path d="M456 84 V126" marker-end="url(#m1)"/>
+    <path d="M240 186 V246" marker-end="url(#m1)"/>
+    <path d="M392 186 V246" marker-end="url(#m1)"/>
+    <path d="M900 186 V246" marker-end="url(#m1)"/>
+    <path d="M240 288 V348" marker-end="url(#m1)"/>
+    <path d="M456 288 V348" marker-end="url(#m1)"/>
+    <path d="M672 288 V348" marker-end="url(#m1)"/>
+    <path d="M516 390 V446" marker-end="url(#m1)"/>
+  </g>
+  <text x="252" y="120" class="cap">import</text>
+  
+  <text x="250" y="330" class="cap">调用解析器</text>
+
+  <!-- 侧注 -->
+  <g transform="translate(120,500)">
+    <circle cx="5" cy="-4" r="4" fill="none" stroke="#8b8471" stroke-dasharray="2 2"/>
+    <text x="16" y="0" class="cap">虚线带 = 一层；箭头只画主干。两处例外写成文档：parse ↔ parse-office 互相引用，revisions → indexer 为重建索引反向依赖</text>
+  </g>
+</svg>

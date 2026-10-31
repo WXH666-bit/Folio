@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Folio 是干什么的 · 大白话版</title>
+<style>
+  :root {
+    --paper: #f1f3ec;
+    --paper-2: #e7ebdf;
+    --paper-3: #dde3d4;
+    --rule: #c2cdbd;
+    --rule-soft: #d5ddce;
+    --ink: #14211a;
+    --ink-2: #46584c;
+    --ink-3: #78897b;
+    --debit: #a63a2c;
+    --credit: #14523e;
+    --ochre: #8a6b1f;
+    --mono: "Cascadia Mono", Consolas, "Courier New", ui-monospace, monospace;
+    --sans: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+    --maxw: 960px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-image:
+      linear-gradient(to right, rgba(20,33,26,.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(20,33,26,.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+  .sheet { max-width: var(--maxw); margin: 0 auto; padding: 54px 32px 92px; }
+
+  .masthead {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 24px; border-bottom: 2px solid var(--ink); padding-bottom: 18px;
+  }
+  .kicker {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(25px, 3.4vw, 35px); line-height: 1.3; margin: 0;
+    letter-spacing: -.01em; font-weight: 700; max-width: 24ch;
+  }
+  h1 em { font-style: normal; color: var(--credit); box-shadow: inset 0 -.42em var(--paper-3); }
+  .masthead__meta {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-2);
+    line-height: 1.9; text-align: right; flex: 0 0 auto;
+  }
+  .masthead__meta b { font-weight: 600; color: var(--ink); }
+
+  .lede { margin: 26px 0 0; max-width: 60ch; font-size: 16px; line-height: 1.9; color: var(--ink-2); }
+  .lede b { color: var(--ink); }
+
+  section { margin-top: 44px; }
+  .band { border-top: 1px solid var(--rule); padding-top: 20px; }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 20px; margin-bottom: 16px;
+  }
+  h2 {
+    font-size: 16px; margin: 0; letter-spacing: .02em; font-weight: 700;
+    padding-left: 10px; border-left: 4px solid var(--ink);
+  }
+  .note { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 0; }
+  p { line-height: 1.9; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--paper-2);
+    padding: 1px 5px; border-radius: 2px;
+  }
+
+  /* 比喻：一摞文件 → 卡片盒 */
+  .analogy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .analogy > div { background: var(--paper); padding: 18px 18px 20px; }
+  .analogy .big { font-size: 26px; line-height: 1.25; margin: 0 0 8px; font-weight: 700; }
+  .analogy p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; }
+  .analogy .n { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--ink-3); margin-bottom: 8px; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .compare > div { background: var(--paper); padding: 18px 20px; }
+  .compare h3 { margin: 0 0 12px; font-size: 13px; letter-spacing: .06em; font-family: var(--mono); font-weight: 600; }
+  .compare .bad h3 { color: var(--debit); }
+  .compare .good h3 { color: var(--credit); }
+  .sum { font-family: var(--mono); font-size: 26px; letter-spacing: -.02em; }
+  .formula { font-size: 13px; line-height: 1.95; color: var(--ink-2); margin: 10px 0 0; }
+
+  .pipe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .stage { background: var(--paper); border: 1px solid var(--rule); padding: 14px 14px 16px; position: relative; }
+  .stage::after {
+    content: ""; position: absolute; right: -9px; top: 50%;
+    width: 8px; height: 1px; background: var(--rule); z-index: 1;
+  }
+  .stage:last-child::after { display: none; }
+  .stage__no { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--ink-3); text-transform: uppercase; }
+  .stage__name { font-size: 15px; font-weight: 700; margin: 6px 0 8px; }
+  .stage__body { font-size: 13px; line-height: 1.85; color: var(--ink-2); margin: 0; }
+  .stage__body b { color: var(--ink); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3);
+    border-bottom: 1px solid var(--ink); padding: 0 10px 8px;
+  }
+  td { border-bottom: 1px solid var(--rule-soft); padding: 10px; vertical-align: top; line-height: 1.8; }
+  td .dim { color: var(--ink-3); font-size: 12px; }
+
+  pre {
+    background: var(--paper-2); border-left: 3px solid var(--ink);
+    padding: 16px 18px; overflow-x: auto; margin: 0;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.95;
+  }
+  pre .k { color: var(--credit); font-weight: 600; }
+  pre .d { color: var(--ink-3); }
+
+  .procs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .proc { border: 1px solid var(--rule); background: var(--paper); padding: 16px; }
+  .proc h3 { margin: 0 0 6px; font-size: 14px; }
+  .proc p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.85; }
+
+  .nots { display: grid; grid-template-columns: 1fr 1fr; gap: 0 26px; margin: 0; padding: 0; list-style: none; }
+  .nots li { border-bottom: 1px solid var(--rule-soft); padding: 12px 0; font-size: 13.5px; line-height: 1.8; color: var(--ink-2); }
+  .nots li b { color: var(--ink); display: block; margin-bottom: 2px; font-size: 14px; }
+
+  .trace { display: grid; grid-template-columns: 104px 1fr; border-top: 1px solid var(--rule); }
+  .trace > dt {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+    color: var(--ink-3); padding: 14px 0 14px 2px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .trace > dd { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--rule-soft); font-size: 13.5px; line-height: 1.85; }
+  .trace > dd code { color: var(--credit); background: transparent; padding: 0; }
+
+  .aside {
+    margin-top: 18px; background: var(--paper-2); border: 1px solid var(--rule);
+    padding: 14px 16px; font-size: 13px; color: var(--ink-2); line-height: 1.85;
+  }
+  .aside b { color: var(--ink); }
+
+  /* ---------- 结构图 ---------- */
+  .flow {
+    display: grid; align-items: stretch; gap: 26px 34px;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .flow--4 { grid-template-columns: repeat(4, 1fr); }
+  .node {
+    position: relative; background: var(--paper); border: 1px solid var(--rule);
+    padding: 13px 12px; text-align: left; min-height: 96px;
+  }
+  .node::after {
+    content: "→"; position: absolute; right: -24px; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); font-size: 15px; color: var(--ink-3); line-height: 1;
+  }
+  .node:last-child::after { display: none; }
+  .node__t { font-size: 13.5px; font-weight: 700; margin: 0 0 5px; }
+  .node__d { margin: 0; font-size: 12px; line-height: 1.7; color: var(--ink-2); }
+  .node--who { border-style: dashed; background: transparent; }
+  .node--who .node__t { color: var(--credit); }
+  .node--you { border-color: var(--ochre); background: var(--paper-3); }
+  .node--you .node__t { color: var(--ochre); }
+  .node--store { border-width: 2px; border-color: var(--ink); background: var(--paper-2); }
+  .flow__label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 10px;
+  }
+  .flowbox { border: 1px dashed var(--rule); padding: 16px; }
+
+  /* 碎片 → 行 */
+  .shreds { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 0; }
+  .shred {
+    border: 1px solid var(--rule); background: var(--paper); padding: 8px 6px;
+    font-size: 11px; line-height: 1.5; color: var(--ink-2);
+  }
+  .shred--far { transform: translateY(10px); }
+  .shred--mid { transform: translateY(26px); }
+  .joined {
+    margin: 0; border: 1px solid var(--ink); background: var(--paper-2);
+    padding: 10px 12px; font-size: 12.5px; line-height: 1.7;
+  }
+  .joined b { font-family: var(--mono); font-size: 11px; color: var(--credit); margin-right: 8px; }
+  .arrow-down {
+    text-align: center; font-family: var(--mono); color: var(--ink-3); font-size: 14px;
+    padding: 6px 0; margin: 0;
+  }
+
+  .art { margin: 0 0 8px; }
+  .art img { width: 100%; height: auto; display: block; }
+  .art figcaption { margin-top: 8px; font-size: 11.5px; color: var(--ink-3); }
+  footer {
+    margin-top: 54px; border-top: 2px solid var(--ink); padding-top: 14px;
+    display: flex; justify-content: space-between; gap: 20px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  a { color: inherit; }
+
+  @media (max-width: 860px) {
+    .sheet { padding: 34px 18px 64px; }
+    .masthead { flex-direction: column; }
+    .masthead__meta { text-align: left; }
+    .analogy, .compare, .procs, .nots, .pipe { grid-template-columns: 1fr; }
+    .flow, .flow--4 { grid-template-columns: 1fr; gap: 20px; }
+    .node::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -19px; transform: translateX(-50%); }
+    .shreds { grid-template-columns: repeat(2, 1fr); }
+    .shred--far, .shred--mid { transform: none; }
+    .stage::after { display: none; }
+    .trace { grid-template-columns: 78px 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="masthead">
+    <div>
+      <p class="kicker">Folio · 大白话版</p>
+      <h1>它给你的文件夹<em>做了一套目录卡片</em>，找东西不用把整摞搬出来</h1>
+    </div>
+    <div class="masthead__meta">
+      给谁用 <b>AI 助手</b><br />
+      支持 <b>PDF / Word / PPT<br />Excel / 网页 / 文本</b><br />
+      要不要联网 <b>不要</b>
+    </div>
+  </header>
+
+  <p class="lede">
+    你把一个文件夹交给它，它会把里面的文件拆开、抄成一张张“目录卡片”，每张卡片上都写着<b>这句话在第几页</b>。
+    以后 AI 要查东西，翻卡片就行，不用把整份文件从头读到尾——<b>又快、又省钱，而且答案能对着页码核对</b>。
+  </p>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>先打个比方</h2>
+      <p class="note">跟你整理纸质档案一个道理</p>
+    </div>
+    <div class="analogy">
+      <div>
+        <div class="n">原本</div>
+        <div class="big">一摞文件</div>
+        <p>30 页的合同、50 页的规范，全塞在文件夹里。要找一个数字，只能一页页翻。</p>
+      </div>
+      <div>
+        <div class="n">Folio 做的</div>
+        <div class="big">抄成卡片</div>
+        <p>把每一行话抄在一张小卡片上，卡片角上写清楚“第 12 页”。原件还原封不动放着。</p>
+      </div>
+      <div>
+        <div class="n">结果</div>
+        <div class="big">查卡片</div>
+        <p>问“违约金是多少”，几秒钟抽出那几张卡片，答案后面还带着页码，你能翻回去自己看。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>为什么这样更划算</h2>
+      <p class="note">同一道题，两种做法的“阅读量”</p>
+    </div>
+    <div class="compare">
+      <div class="bad">
+        <h3>老办法 · 整篇读</h3>
+        <div class="sum">约 7,000 字</div>
+        <p class="formula">
+          把 30 页合同从头读到尾<br />
+          再问一次，还得再读一遍<br />
+          读的时候眼睛会看漏
+        </p>
+      </div>
+      <div class="good">
+        <h3>现在 · 先查再读一页</h3>
+        <div class="sum">约 270 字</div>
+        <p class="formula">
+          只读命中的那几行<br />
+          需要细节时，只翻那一页<br />
+          每条都带页码，错了能核
+        </p>
+      </div>
+    </div>
+    <div class="aside">
+      <b>“字”是粗略说法。</b> AI 收费按 token 算，一个汉字大约一个 token。这里说“字”，是让你有个直观感觉：整篇读完的代价，是只查几行的二十多倍。
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>它一共干四件事</h2>
+      <p class="note">拆开 → 抄卡片 → 找卡片 → 改</p>
+    </div>
+    <div class="pipe">
+      <div class="stage">
+        <div class="stage__no">第一步</div>
+        <div class="stage__name">拆开</div>
+        <p class="stage__body">
+          把 PDF、Word、PPT、Excel 里的<b>文字一行行取出来</b>，并记住每行原来在第几页、第几张幻灯片、哪个工作表。
+        </p>
+      </div>
+      <div class="stage">
+        <div class="stage__no">第二步</div>
+        <div class="stage__name">抄卡片</div>
+        <p class="stage__body">
+          抄成一个个纯文本文件，每行前面写着页码。没有数据库、没有云服务，用记事本都能打开看。
+        </p>
+      </div>
+      <div class="stage">
+        <div class="stage__no">第三步</div>
+        <div class="stage__name">找卡片</div>
+        <p class="stage__body">
+          按关键词把包含这些词的卡片挑出来，<b>原话照抄</b>，不改写、不总结，后面标着“第 12 页第 5 行”。
+        </p>
+      </div>
+      <div class="stage">
+        <div class="stage__no">第四步</div>
+        <div class="stage__name">改</div>
+        <p class="stage__body">
+          要改文件，先写一张<b>修改申请单</b>；你点头了才动笔，动笔前先留一份旧稿。改完目录卡片立刻更新。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>卡片长什么样</h2>
+      <p class="note">翻开就能看懂，不需要任何软件</p>
+    </div>
+    <pre><span class="d">合同A_主合同 · 第 12 页那一部分</span>
+<span class="k">第12页</span>   12.3 甲方逾期付款的，每逾期一日按逾期金额的万分之五向乙方支付违约金
+<span class="k">第12页</span>   12.4 乙方逾期提交发票的，每逾期一日按对应金额的万分之三向甲方支付违约金
+<span class="k">第15页</span>   14.2 乙方逾期交付的，每逾期一日按合同总价款的万分之三支付违约金
+
+<span class="d">付款条款_内部说明 · 第 3 段那一部分</span>
+<span class="k">第3段</span>    三、付款方式：合同签订后 30 日内支付首款，验收后 15 日内支付尾款。</pre>
+    <div class="aside">
+      左边是<b>页码</b>，右边是<b>原话</b>。中间那个小空白（制表符）是分隔线，人眼和程序都一眼能分清。
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>整件事是怎么摆的</h2>
+      <p class="note">一张图看完：谁在看、谁在抄、谁在答</p>
+    </div>
+
+        <figure class="art">
+      <img src="art/overview.svg" alt="文件夹经整理员变成卡片盒，再由回答员交给 AI；AI 要改文件时先写申请单、等人签字" />
+      <figcaption>第一层：文件进来，卡片出来。虚线是程序，粗黑框是盘上的文件。</figcaption>
+    </figure>
+
+    <figure class="art" style="margin-top:22px">
+      <img src="art/approve.svg" alt="AI 起草修改、写申请单、人签字开开关、动笔并留底" />
+      <figcaption>第二层：要改文件，多绕一圈——申请单、签字、留底，缺一步都不动笔。</figcaption>
+    </figure>
+
+    <div class="aside">
+      为什么中间要隔一个“卡片盒”？因为<b>原文件是证据</b>。卡片抄坏了可以重抄，原件被改坏了就回不去了。
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>一份 PDF 是怎么变成卡片的</h2>
+      <p class="note">机器读到的是一堆碎片，得先拼起来</p>
+    </div>
+        <figure class="art">
+      <img src="art/pdf-to-card.svg" alt="一页 PDF 断成位置散乱的文字块，拼成带页码的卡片行" />
+      <figcaption>同一高度拼成一行，空隙大补三个空格，落在哪页记在行首。</figcaption>
+    </figure>
+
+    <div class="aside">
+      这一行现在<b>能被搜到、也带着页码</b>了。同一份文件里几百行都这么处理，就有了那一盒卡片。
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>卡片盒里到底有什么</h2>
+      <p class="note">就是一个普通文件夹，记事本能打开</p>
+    </div>
+    <div class="flow flow--4">
+      <div class="node node--store">
+        <p class="node__t">.folio/</p>
+        <p class="node__d">卡片盒，放在你能指定任意位置</p>
+      </div>
+      <div class="node">
+        <p class="node__t">manifest.json</p>
+        <p class="node__d">目录清单：有哪些文件、几页、几行、有没有表格</p>
+      </div>
+      <div class="node">
+        <p class="node__t">index/</p>
+        <p class="node__d">一份文件一张卡片，文件名和原文件同名</p>
+      </div>
+      <div class="node">
+        <p class="node__t">revisions/ · backup/</p>
+        <p class="node__d">修改申请单，和每次动笔前留的旧稿</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>为什么要分成两个程序</h2>
+      <p class="note">一个负责整理，一个负责回答</p>
+    </div>
+    <div class="procs">
+      <div class="proc">
+        <h3>整理员 · 一直在后台待命</h3>
+        <p>你往文件夹里加文件、改文件、删文件，它自己发现并更新卡片。你不用管它。</p>
+      </div>
+      <div class="proc">
+        <h3>回答员 · 你的 AI 用的时候才叫醒</h3>
+        <p>只负责翻卡片回答“有什么、搜什么、翻哪页”。它不碰原文件，也不会一上来就重新解析一遍。</p>
+      </div>
+      <div class="proc">
+        <h3>两个人怎么不打架</h3>
+        <p>整理员动卡片时会先说一句“我在改”，回答员看到就等一会儿——等不到就先拿旧的，不会读到抄了一半的卡片。</p>
+      </div>
+      <div class="proc">
+        <h3>改文件另有一个开关</h3>
+        <p>默认情况下，回答员<b>只能提意见，不能动文件</b>。要真的写，启动时得手动打开开关，这是故意的。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>一句话是怎么被找到的</h2>
+      <p class="note">以合同里“万分之五”那句为例</p>
+    </div>
+    <dl class="trace">
+      <dt>原文里</dt>
+      <dd>这句话在 PDF 里其实是一堆零碎的文字块，位置是乱序的，机器直接读只能读到一锅粥。</dd>
+      <dt>排整齐</dt>
+      <dd>Folio 把同一高度上的字块拼成一行；两个词之间空得太开，就补几个空格，免得“甲方”和“乙方”粘成一个词。</dd>
+      <dt>记页码</dt>
+      <dd>这一行落在第 12 页，于是给它编上“第 12 页”的标签。</dd>
+      <dt>抄上卡</dt>
+      <dd>抄进卡片文件，一行一句，前面标页码。</dd>
+      <dt>被找到</dt>
+      <dd>你问“违约金多少”，它把含“万分之”的几行原话交出来，每行后面都有页码。</dd>
+      <dt>能核对</dt>
+      <dd>AI 回答“第 12 页 12.3”，你可以自己翻回合同第 12 页对一遍——<b>这是它存在的理由</b>。</dd>
+    </dl>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>哪些文件能改，哪些不能</h2>
+      <p class="note">不能改的，它只出意见</p>
+    </div>
+    <table>
+      <thead>
+        <tr><th style="width:26%">文件类型</th><th style="width:22%">页码长这样</th><th>为什么</th><th style="width:14%">能直接改吗</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PDF</td><td class="dim">第 12 页</td><td>PDF 里没有“第几行”这回事，硬改会把版式弄坏</td><td>不能，只出意见</td></tr>
+        <tr><td>Word（.docx）</td><td class="dim">第 37 段</td><td>它能定位到段落，但只能换掉一段里的字，不能增删段落</td><td>能，只改文字</td></tr>
+        <tr><td>PPT</td><td class="dim">第 6 张幻灯片</td><td>幻灯片是一堆打包文件，按“行”改会切错地方</td><td>不能，只出意见</td></tr>
+        <tr><td>Excel</td><td class="dim">工作表“台账”</td><td>同上，表格文件也是打包格式</td><td>不能，只出意见</td></tr>
+        <tr><td>网页（.html）</td><td class="dim">第 N 段</td><td>卡片上的文字是从网页里抽出来的，跟原文行号对不上</td><td>不能，只出意见</td></tr>
+        <tr><td>纯文本（txt / md / csv）</td><td class="dim">第 N 段</td><td>一行就是一行，行号完全对得上</td><td>能，改 / 加 / 删都行</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="band">
+    <div class="section-head">
+      <h2>它不会做的事</h2>
+      <p class="note">这几条是故意的，不是没做完</p>
+    </div>
+    <ul class="nots">
+      <li><b>看不懂扫描件，会直说</b>扫描件是一张图，没有文字可抄。它会告诉你“这份要 OCR”，而不是瞎编内容。</li>
+      <li><b>不懂“意思”，只认字面</b>你搜“违约金”，它不会顺手把“赔偿”也给你——但也不会把不相关的塞进来。</li>
+      <li><b>不会把表格变成表格</b>表格会被抄成一行行文字，能读，但没法再算数。</li>
+      <li><b>不会替文件写摘要</b>摘要是“改写过的意思”，一旦写进卡片就回不到原话了。它只抄原文。</li>
+      <li><b>不会自己动手改</b>除非你明确打开开关，它最多给你一张“建议怎么改”的单子。</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Folio · 给 AI 用的文件目录卡片</span>
+    <span>看懂原理后，可以看 <a href="bench.html">实测对比</a>（省了多少）</span>
+  </footer>
+</div>
+</body>
+</html>

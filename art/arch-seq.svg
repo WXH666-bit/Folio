@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 470" width="1040" height="470" font-family="'Microsoft YaHei','PingFang SC',sans-serif">
+  <defs>
+    <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2b2b28"/></marker>
+    <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6f6a5b"/></marker>
+    <style>
+      .hd{fill:#efead9;stroke:#b9ad86}
+      .lif{stroke:#cfc8b4;stroke-dasharray:4 4}
+      .t{font-size:12px;fill:#1f1f1c;font-weight:700}
+      .d{font-size:10px;fill:#7d776a}
+      .msg{font-size:11px;fill:#2b2b28}
+      .ret{font-size:11px;fill:#6f6a5b}
+      .num{font-size:9.5px;fill:#a5651a;font-weight:700}
+    </style>
+  </defs>
+
+  <!-- 生命线头 -->
+  <rect class="hd" x="34" y="24" width="150" height="44"/>
+  <text x="48" y="44" class="t">Agent</text>
+  <text x="48" y="59" class="d">模型侧 / 宿主</text>
+
+  <rect class="hd" x="286" y="24" width="150" height="44"/>
+  <text x="300" y="44" class="t">mcp.ts</text>
+  <text x="300" y="59" class="d">工具层</text>
+
+  <rect class="hd" x="538" y="24" width="150" height="44"/>
+  <text x="552" y="44" class="t">search.ts</text>
+  <text x="552" y="59" class="d">查询层</text>
+
+  <rect class="hd" x="790" y="24" width="180" height="44"/>
+  <text x="804" y="44" class="t">.folio/index/*.txt</text>
+  <text x="804" y="59" class="d">卡片（纯文本）</text>
+
+  <g class="lif">
+    <line x1="109" y1="68" x2="109" y2="392"/>
+    <line x1="361" y1="68" x2="361" y2="392"/>
+    <line x1="613" y1="68" x2="613" y2="392"/>
+    <line x1="880" y1="68" x2="880" y2="392"/>
+  </g>
+
+  <!-- 1 -->
+  <line x1="109" y1="104" x2="355" y2="104" stroke="#2b2b28" stroke-width="1.3" marker-end="url(#s1)"/>
+  <text x="116" y="122" class="num">1</text>
+  <text x="116" y="90" class="msg">tools/call folio_search {query:"万分之", limit:8}</text>
+
+  <!-- 2 -->
+  <line x1="361" y1="150" x2="607" y2="150" stroke="#2b2b28" stroke-width="1.3" marker-end="url(#s1)"/>
+  <text x="368" y="168" class="num">2</text>
+  <text x="368" y="136" class="msg">searchDocs(store, q, {limit, doc?, regex?})</text>
+
+  <!-- 3 -->
+  <line x1="613" y1="196" x2="874" y2="196" stroke="#2b2b28" stroke-width="1.3" marker-end="url(#s1)"/>
+  <text x="620" y="214" class="num">3</text>
+  <text x="620" y="182" class="msg">逐行读索引（每 256 行检查一次时间预算）</text>
+
+  <!-- 4 -->
+  <line x1="880" y1="242" x2="619" y2="242" stroke="#6f6a5b" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#s2)"/>
+  <text x="700" y="236" class="num">4</text>
+  <text x="640" y="262" class="ret">命中行：p.12 ⇥ 12.3 甲方逾期付款的…（原文一字不改）</text>
+
+  <!-- 5 -->
+  <line x1="613" y1="300" x2="367" y2="300" stroke="#6f6a5b" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#s2)"/>
+  <text x="470" y="294" class="num">5</text>
+  <text x="392" y="320" class="ret">{hits[], totalHits, docs, ms}</text>
+
+  <!-- 6 -->
+  <line x1="361" y1="356" x2="115" y2="356" stroke="#6f6a5b" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#s2)"/>
+  <text x="200" y="350" class="num">6</text>
+  <text x="130" y="376" class="ret">纯文本：合同A:p.12  12.3 甲方逾期付款的…（附章节路径）</text>
+
+  <!-- 注 -->
+  <rect x="34" y="404" width="972" height="46" fill="#f7f3e6" stroke="#d6d1c2"/>
+  <text x="48" y="424" class="d">解析与建索引不在这一条时序里：它发生在启动时一次，或整理员进程里；因此这次调用的成本只与「命中行数」有关，与文档总页数无关。</text>
+  <text x="48" y="441" class="d">写类工具（folio_revise / folio_apply）走另一条路径：先落盘 JSONL 申请单，apply 时过 --allow-apply 闸门、备份、改一行、再触发 indexer 重建该文档索引。</text>
+</svg>
