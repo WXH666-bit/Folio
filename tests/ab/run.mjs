@@ -8,10 +8,11 @@
 //   - B/C 臂在起 pi 之前先把该次工作目录索引好，索引耗时不计入 walls
 import fs from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
 import { summarize, scoreRec, norm } from "./stat.mjs";
+import { isolatedEnv, balancedJobs } from "./isolation.mjs";
 
 const ZIP_DOCS = new Set([".docx", ".pptx", ".xlsx"]);
 
@@ -74,6 +75,7 @@ const modelId = arg("model", MODEL);
 const timeoutMs = Number(arg("timeout", "900")) * 1000;
 const pauseMs = Math.max(0, Number(arg("pause-ms", "0")));
 const maxRetries = Math.max(0, Number(arg("retries", "1")));
+const paired = arg("order", "grouped") === "paired";
 const corpusDir = path.resolve(ROOT, arg("corpus", CORPUS));
 const runsDir = path.resolve(ROOT, arg("runs", RUNS));
 const qFile = path.resolve(ROOT, arg("qfile", path.join(ROOT, "tests", "ab", "questions.json")));
@@ -134,7 +136,7 @@ function prep(arm, q, r = 1) {
     };
     fs.writeFileSync(path.join(homeDir, "mcp.json"), JSON.stringify(mcp, null, 2));
   }
-  return { workDir, homeDir, indexHome };
+  return { privateRoot, workDir, homeDir, indexHome };
 }
 
 function run(cmd, args, opts) {
@@ -149,33 +151,28 @@ function run(cmd, args, opts) {
 }
 
 async function runOne(arm, q, r = 1) {
-  const { workDir, homeDir, indexHome } = prep(arm, q, r);
+  const { privateRoot, workDir, homeDir, indexHome } = prep(arm, q, r);
+  const env = isolatedEnv(privateRoot, homeDir);
   const dir = path.join(runsDir, arm);
   fs.mkdirSync(dir, { recursive: true });
   const stem = repeat > 1 ? `${q.id}.r${r}` : q.id;
 
   // 先把这次的工作目录索引好（只影响 B/C 的索引内容，不计时）
+  let indexMs = 0;
   if (ARMS[arm].mcp) {
-    const idx = await run(process.execPath, [CLI, "index", "--root", workDir, "--home", indexHome], { cwd: workDir });
+    const start = Date.now();
+    const idx = await run(process.execPath, [CLI, "index", "--root", workDir, "--home", indexHome], { cwd: workDir, env });
+    indexMs = Date.now() - start;
     if (idx.code !== 0) console.error(`  [index failed ${arm} ${q.id}] ${idx.out.slice(-300)}`);
   }
 
   const jsonl = path.join(dir, `${stem}.jsonl`);
   const out = fs.openSync(jsonl, "w");
 
-  const env = {
-    ...process.env,
-    PI_CODING_AGENT_DIR: homeDir,
-    PI_OFFLINE: "1",
-    PI_TELEMETRY: "0",
-    PI_SKIP_VERSION_CHECK: "1",
-    // 密钥从环境变量来，models.json 里只有 "$AIGW_API_KEY" 占位符
-    AIGW_API_KEY: process.env.AIGW_API_KEY,
-    PATH: [process.env.FOLIO_PYTHON_DIR, process.env.PATH].filter(Boolean).join(path.delimiter),
-  };
-
-  const prompt = `${q.q}\n\n回答要求：直接给结论，一到两句话，并注明依据来自哪个文件、第几页或第几节。所有临时文件只能写在当前工作目录或它的子目录（该目录位于项目 tests/tmp 下），禁止写入系统 /tmp 或读取其它测试运行目录。`;
-  const args = [PI, "-p", prompt, "--model", modelId, "--mode", "json", "--no-session", "--no-context-files", "--thinking", thinking];
+  const prompt = `${q.q}\n\n回答要求：直接给结论，一到两句话，并注明依据来自哪个文件、第几页或第几节。所有临时文件只能写在当前工作目录或环境变量指定的隔离临时目录；禁止访问用户的真实主目录、个人 pi 配置及其它测试运行目录。`;
+  // Keep built-in extensions: pi implements MCP itself as a built-in extension.
+  // Personal extensions cannot be discovered in these fresh isolated homes.
+  const args = [PI, "-p", prompt, "--model", modelId, "--mode", "json", "--no-session", "--no-context-files", "--no-skills", "--no-prompt-templates", "--extension", path.join(here,"pi-isolation-guard.mjs"), "--thinking", thinking];
   if (!ARMS[arm].mcp) args.push("--no-mcp");
 
   return new Promise((resolve) => {
@@ -187,7 +184,8 @@ async function runOne(arm, q, r = 1) {
     child.stderr.on("data", (d) => errBuf.push(d.toString()));
     const killer = setTimeout(() => {
       try {
-        child.kill("SIGKILL");
+        if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
+        else child.kill("SIGKILL");
       } catch {}
     }, timeoutMs);
     child.on("close", async (code) => {
@@ -205,6 +203,9 @@ async function runOne(arm, q, r = 1) {
         code,
         folioCli: CLI,
         wallMs: Date.now() - t0,
+        indexMs,
+        workDir,
+        agentDir: homeDir,
         expects: q.expect,
         expectKeys: q.expectKeys,
         stderrTail: errBuf.join("").slice(-800),
@@ -249,8 +250,8 @@ async function runOne(arm, q, r = 1) {
   });
 }
 
-const jobs = [];
-for (const arm of arms) for (const q of qs) for (let r = 1; r <= repeat; r++) jobs.push({ arm, q, r });
+const jobs = paired ? balancedJobs(arms, qs, repeat) : [];
+if (!paired) for (const arm of arms) for (const q of qs) for (let r = 1; r <= repeat; r++) jobs.push({ arm, q, r });
 let idx = 0;
 const results = [];
 const keyOf = (rec) => `${rec.arm}|${rec.qid}|${rec.run ?? 1}`;
@@ -272,6 +273,8 @@ async function worker() {
     const stem = repeat > 1 ? `${j.q.id}.r${j.r}` : j.q.id;
     fs.writeFileSync(path.join(runsDir, j.arm, `${stem}.json`), JSON.stringify(rec, null, 2));
     results.push(rec);
+    // Persist each completed run so an interruption cannot lose the comparison.
+    fs.writeFileSync(path.join(runsDir, "progress.json"), JSON.stringify(results, null, 2));
     console.log(
       `[${results.length}/${jobs.length}] ${rec.arm} ${rec.qid}${repeat > 1 ? `#${rec.run}` : ""} turns=${rec.turns} tools=${rec.toolCalls} prompt=${rec.promptTokens} (in=${rec.inputTokens} cache=${rec.cacheReadTokens}) peak=${rec.peakContext} acc=${rec.acc.toFixed(2)} ${Math.round(rec.wallMs / 1000)}s`,
     );
@@ -284,4 +287,4 @@ const all = JSON.parse(fs.existsSync(path.join(runsDir, "summary.json")) ? fs.re
 const fresh = new Set(results.map(keyOf));
 const merged = all.filter((a) => !fresh.has(keyOf(a))).concat(results);
 fs.writeFileSync(path.join(runsDir, "summary.json"), JSON.stringify(merged.sort((a, b) => keyOf(a).localeCompare(keyOf(b))), null, 2));
-console.log("\ndone -> tests/ab/runs/summary.json");
+console.log(`\ndone -> ${path.relative(ROOT, path.join(runsDir, "summary.json"))}`);

@@ -13,24 +13,48 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "tsc -p tsconfig.json && tsx tests/parse.test.ts && tsx tests/store.test.ts && tsx tests/search.test.ts && tsx tests/docx.test.ts && tsx tests/revise.test.ts && tsx tests/formats.test.ts && tsx tests/retrieval.test.ts && node tests/ab-stat.test.mjs && tsx tests/mcp-smoke.ts",
+    "test": "tsc -p tsconfig.json && tsx tests/parse.test.ts && tsx tests/store.test.ts && tsx tests/search.test.ts && tsx tests/docx.test.ts && tsx tests/revise.test.ts && tsx tests/formats.test.ts && tsx tests/retrieval.test.ts && node tests/ab-stat.test.mjs && node tests/ab-isolation.test.mjs && tsx tests/mcp-smoke.ts",
     "dev": "tsx src/cli.ts",
     "start": "tsx src/cli.ts start",
     "index": "tsx src/cli.ts index",
-    "fixtures": "D:\\python3.11\\python.exe tests/make-fixtures.py"
+    "setup:pi": "npm install --prefix pi",
+    "dev:web": "concurrently -k \"tsx watch web/server/main.ts\" \"vite --config web/vite.config.ts\"",
+    "build:web": "npm run build && tsc -p web/tsconfig.json && vite build --config web/vite.config.ts",
+    "start:web": "tsx web/server/main.ts",
+    "test:web": "tsx tests/web.test.ts && tsx tests/web-rpc.test.ts",
+    "fixtures": "D:\\python3.11\\python.exe tests/make-fixtures.py",
+    "setup:compare": "node pi/setup-comparison.mjs",
+    "test:compare": "tsx tests/comparison.test.ts",
+    "test:sandbox": "tsx tests/native-sandbox.test.ts",
+    "record:compare": "tsx tests/record-comparison.ts"
   },
   "dependencies": {
+    "@fastify/multipart": "^9.4.0",
+    "@fastify/static": "^8.3.0",
+    "@fontsource/zcool-kuaile": "^5.3.0",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "chokidar": "^6.0.0",
+    "fastify": "^5.12.7",
     "gpt-tokenizer": "^4.1.0",
     "jszip": "^3.10.2",
     "mammoth": "^1.13.0",
+    "motion": "^12.43.0",
     "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "roughjs": "^4.6.6",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "concurrently": "^9.2.5",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^7.3.7"
   }
 }

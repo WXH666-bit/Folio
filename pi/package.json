@@ -1,0 +1,8 @@
+{
+  "name": "folio-independent-pi",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Application-owned pi runtime. Never uses the user's personal pi.",
+  "dependencies": { "@earendil-works/pi-coding-agent": "1.4.0" },
+  "engines": { "node": ">=22.19.0" }
+}

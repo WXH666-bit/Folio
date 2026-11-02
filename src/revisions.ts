@@ -33,7 +33,7 @@ export interface Revision {
   before: string;
   text: string;
   reason: string;
-  status: "pending" | "applied" | "conflict";
+  status: "pending" | "applied" | "conflict" | "discarded";
   created: string;
   appliedAt?: string;
 }
@@ -121,6 +121,17 @@ export async function listRevisions(store: Store, doc?: string): Promise<Revisio
   const all: Revision[] = [];
   for (const file of files) all.push(...(await readLog(file)));
   return all.sort((a, b) => (a.doc === b.doc ? a.id.localeCompare(b.id, undefined, { numeric: true }) : a.doc.localeCompare(b.doc)));
+}
+
+/** Explicitly discard selected drafts; they must never become eligible for a later apply. */
+export async function discardRevisions(store: Store, doc: string, ids: string[]): Promise<Revision[]> {
+  if (!ids.length) throw new Error("select at least one revision to discard");
+  return withLock(store.home, "index", async () => {
+    const selected = (await listRevisions(store, doc)).filter((r) => r.status === "pending" && ids.includes(r.id));
+    const settled: Revision[] = selected.map((r) => ({ ...r, status: "discarded" }));
+    for (const revision of settled) await append(revisionsFile(store, doc), revision);
+    return settled;
+  });
 }
 
 /** The text of one line of the index, which is what a revision points at. */

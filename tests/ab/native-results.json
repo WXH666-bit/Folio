@@ -1,0 +1,2026 @@
+{
+  "title": "Folio MCP 与原生 pi：隔离对照测试",
+  "startedAt": "2026-10-31T03:31:40.546Z",
+  "finishedAt": "2026-10-31T04:13:00.482Z",
+  "model": "aigw/DeepSeek-V4-Flash-0731-W8A8",
+  "piVersion": "1.4.0",
+  "sourceCommit": "ca41fb7a5e85ce9cee08fc826d348b93866a4c57",
+  "sourceWorkingTree": "Product src unchanged; benchmark harness updated for isolation and review.",
+  "protocol": {
+    "questions": 6,
+    "repeats": 3,
+    "runsPerArm": 18,
+    "order": "paired, alternating order",
+    "concurrency": 1,
+    "pauseSeconds": 25,
+    "timeoutSeconds": 180,
+    "runnerRetries": 0,
+    "corpusDocuments": 26,
+    "corpusHashes": {
+      "医疗_检验指标.xlsx": "0f3ac45ecc8991710ac2d2de5c8fbd0beb636cf2d1c03f14ea917c7ae9eeaadc",
+      "医疗_用药说明.docx": "9657252cf65a830b7e0389610b54f4cb443c3dd1836e8e5187fa16f2c72c4ff6",
+      "医疗_门诊病历.pdf": "32f72c24416a41de8a65745a4eb1ab01dfcee39881beb782eb20873245100fc3",
+      "医疗_随访记录.md": "8159562434bb142232d4cbc1ba16dabcf6334d583bd501c73d25c0d72a72c617",
+      "培训_学员名单.xlsx": "88a8c77e68d4ae52daa3f73c61f93a79427d8b1efec0f04b6060b62f89d95002",
+      "培训_结业说明.docx": "09bd6dce2f6ba1acd8bb711490477db9b024e373b783d1fc3bb9c80d35c07cc8",
+      "培训_试题.md": "85b9bcd0da737f0a242bd1cdcc3f00a61e91f652252ed2cadabb4e3f2ded8f1c",
+      "培训_课程大纲.pptx": "ad7f82cef79f38e317d3e1aa1a4118ba9fb35230a93304fcdf7bf247527eeeae",
+      "技术_值班记录.csv": "ebdfa882aea9f33c2c27219de5c47684c2bcd5f4a0b555475b2262e53b5bc09f",
+      "技术_接口文档.html": "f755fe71ebea665916ff81016537c33a481f28de3fcd7dbb12a0f4ae96c509cf",
+      "技术_架构说明.docx": "e6b52e3deb94d5696a2d22d12ea725467fa2ac54826963f63cfdc0b9f32565f5",
+      "技术_规范全文.pdf": "8a5b0ee1ec85e2edebb281b1daf45827b1143f1e9e69e9a7a84f7fc768ca0d9a",
+      "技术_运维手册.md": "44a56ca998925dfb4db0977053908fe079b3184fa4d04d2f2bbe5759ac2523d0",
+      "政府_会议纪要.docx": "661adaa1fda98e454bec8d3de0db46159ede2b291a6bdb7d39e65591faa3f3e5",
+      "政府_办事指南.html": "e180dd85ddc121b04d2952d7b5e4abf69ecabeee3d461f44c9836d7698bb65b8",
+      "政府_申报通知.pdf": "bf488aede95a569f3ac7b7bb2fe9eed699429f13525742b520a06c1423786a2a",
+      "政府_签到表_扫描件.pdf": "f0f3e836962c3883221e29c44c4496563c90a748786573705d4a8b901df43769",
+      "政府_预算表.xlsx": "513dacd100fd4521bcfbf9da5274eb7ca043b5d39b158d7a5d03589801183b4c",
+      "法务_修订说明.docx": "07f02fa4ba29bf6d85a178dfb645aa0ad49b255a8fe99be642458eca25642827",
+      "法务_技术开发合同.pdf": "89be5b0cb2919462630c07dd84ccb3ba9047aebb414c9f2e19b3bac1b883229c",
+      "法务_条款核查清单.csv": "43e43d14bb77104261db9405dc98a4a63d9ee29bd47b1dbdb5a8a9bd777ac06d",
+      "法务_补充协议.pdf": "0b761b57dd8fd5b7e530c855f50c4e805731f0cb8c9c475a838e81fd6e6eb658",
+      "财税_季度摘要.pdf": "3717c1851a5690fb8acef632525669c870fb5edf329cadc9915ce831f632f5f2",
+      "财税_报销制度.md": "78eb665f13a680c6be40676d1e7747d1a5a4b279fdd1d839f2a921aeb6b51d2d",
+      "财税_支出台账.xlsx": "fbfdeaa4784c1140613089fc1efba5a74f2c4069f0c1215e273523d55b930fa9",
+      "财税_预算说明.docx": "e98f3c618d3c0eb7035f7d62f820c91f4b724c2399148f0d98d9d960c9e9b2c4"
+    },
+    "questionHash": "592d4e81661f9b141d765cf87ee0a484cb5929b2c6f46a48369d4de10a3284a2",
+    "inputTokens": "Provider-reported cumulative input + cacheRead + cacheWrite over all calls; recorded failure usage included. In-flight requests without returned usage cannot be measured.",
+    "outputTokens": "Provider-reported cumulative output; token counts are not currency costs.",
+    "verdict": "Manual review against source; safe scan abstention reported separately from accomplishing the requested identification. Write integrity ignores only trailing newlines and optional blank lines immediately before the inserted Markdown paragraph.",
+    "sharedTools": "Both arms retain native read/bash/edit/write and installed Python/PyMuPDF/RapidOCR. Folio itself does not provide OCR.",
+    "limitations": "Six synthetic tasks targeting PDF/Markdown/CSV, three repeats; descriptive sample, no statistical significance claim. Same Windows OS tools, not an OS sandbox. Indexing time shown separately."
+  },
+  "isolation": {
+    "configurationFilesChecked": 14,
+    "personalConfigUnchanged": true,
+    "corpusUnchanged": true,
+    "description": "Per attempt: separate PI_CODING_AGENT_DIR, HOME/USERPROFILE, APPDATA, caches, temp and npm config. Sessions/context/skills/templates disabled. Fresh homes have no personal extensions; built-in extensions remain enabled because pi implements MCP as one. Configuration isolation, not an OS filesystem sandbox. Both arms also load the same pi-isolation-guard.mjs to remap literal /tmp and block pi paths/file-tool escapes."
+  },
+  "excludedPilot": "Two preflights were stopped: --no-extensions disables pi's built-in MCP, and environment variables alone do not remap hard-coded /tmp paths. Both excluded preflights are retained under tests/tmp; formal runs apply the same tool-input guard to both arms.",
+  "pilotRecordedUsage": [
+    {
+      "preflight": "native-comparison-2026-10-31",
+      "arm": "A",
+      "file": "q1-locate.r1.jsonl",
+      "promptTokens": 146433,
+      "outputTokens": 2566,
+      "completed": true
+    },
+    {
+      "preflight": "native-comparison-2026-10-31",
+      "arm": "B",
+      "file": "q1-locate.r1.jsonl",
+      "promptTokens": 10381,
+      "outputTokens": 665,
+      "completed": false
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "A",
+      "file": "q1-locate.r1.jsonl",
+      "promptTokens": 67118,
+      "outputTokens": 2554,
+      "completed": false
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "A",
+      "file": "q4-summarize.r1.jsonl",
+      "promptTokens": 7284,
+      "outputTokens": 246,
+      "completed": true
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "A",
+      "file": "q9-scan.r1.jsonl",
+      "promptTokens": 82857,
+      "outputTokens": 2265,
+      "completed": true
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "B",
+      "file": "q1-locate.r1.jsonl",
+      "promptTokens": 25332,
+      "outputTokens": 747,
+      "completed": true
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "B",
+      "file": "q4-summarize.r1.jsonl",
+      "promptTokens": 15908,
+      "outputTokens": 227,
+      "completed": true
+    },
+    {
+      "preflight": "native-comparison-2026-10-31-final",
+      "arm": "B",
+      "file": "q9-scan.r1.jsonl",
+      "promptTokens": 53374,
+      "outputTokens": 1527,
+      "completed": false
+    }
+  ],
+  "nativeTextProbe": {
+    "pythonStdoutEncoding": "gbk",
+    "technicalPdfPages": 60,
+    "page45TextCharacters": 320,
+    "backupKeywordExtractable": true,
+    "note": "Independent read-only PyMuPDF probe confirmed the locating PDF has usable text; agent console-decoding failures do not mean the PDF requires OCR."
+  },
+  "totals": {
+    "A": {
+      "runs": 18,
+      "completed": 16,
+      "goalCompleted": 13,
+      "safeAbstentions": 0,
+      "failures": 5,
+      "inputTokens": 660859,
+      "outputTokens": 20584,
+      "totalTokens": 681443,
+      "toolCalls": 128,
+      "wallSeconds": 934.806,
+      "indexSeconds": 0,
+      "writesPassed": 9,
+      "writes": 9,
+      "goalWithUsableCitation": 10,
+      "citationIssues": 4,
+      "rateLimited": 0
+    },
+    "B": {
+      "runs": 18,
+      "completed": 16,
+      "goalCompleted": 16,
+      "safeAbstentions": 0,
+      "failures": 2,
+      "inputTokens": 525313,
+      "outputTokens": 12079,
+      "totalTokens": 537392,
+      "toolCalls": 106,
+      "wallSeconds": 629.478,
+      "indexSeconds": 37.749,
+      "writesPassed": 9,
+      "writes": 9,
+      "goalWithUsableCitation": 16,
+      "citationIssues": 0,
+      "rateLimited": 0
+    }
+  },
+  "jointlyCompletedPairs": {
+    "pairs": [
+      {
+        "qid": "q4-summarize",
+        "run": 1,
+        "A": 7220,
+        "B": 15610
+      },
+      {
+        "qid": "q4-summarize",
+        "run": 3,
+        "A": 7325,
+        "B": 24513
+      },
+      {
+        "qid": "q11-update-md",
+        "run": 1,
+        "A": 7831,
+        "B": 20339
+      },
+      {
+        "qid": "q11-update-md",
+        "run": 2,
+        "A": 10155,
+        "B": 24699
+      },
+      {
+        "qid": "q11-update-md",
+        "run": 3,
+        "A": 10068,
+        "B": 24701
+      },
+      {
+        "qid": "q12-insert-md",
+        "run": 1,
+        "A": 10575,
+        "B": 46317
+      },
+      {
+        "qid": "q12-insert-md",
+        "run": 2,
+        "A": 10376,
+        "B": 25634
+      },
+      {
+        "qid": "q12-insert-md",
+        "run": 3,
+        "A": 14978,
+        "B": 21187
+      },
+      {
+        "qid": "q13-delete-csv",
+        "run": 1,
+        "A": 18237,
+        "B": 20054
+      },
+      {
+        "qid": "q13-delete-csv",
+        "run": 2,
+        "A": 10951,
+        "B": 20150
+      },
+      {
+        "qid": "q13-delete-csv",
+        "run": 3,
+        "A": 13486,
+        "B": 29649
+      }
+    ],
+    "inputTokens": {
+      "A": 121202,
+      "B": 272853
+    }
+  },
+  "perQuestion": [
+    {
+      "id": "q1-locate",
+      "kind": "定位",
+      "question": "技术规范全文里规定的备份策略：全量备份多久一次、保留多少天，在第几页？",
+      "expected": "全量备份每周一次，保留 90 天；技术规范第 45 页。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 1,
+          "goalCompleted": 0,
+          "safeAbstentions": 0,
+          "failures": 3,
+          "inputTokens": 338299,
+          "outputTokens": 9787,
+          "totalTokens": 348086,
+          "toolCalls": 48,
+          "wallSeconds": 411.922,
+          "indexSeconds": 0,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 0,
+          "citationIssues": 1,
+          "rateLimited": 0,
+          "medianInputTokens": 119660,
+          "medianSeconds": 180.814,
+          "medianTools": 18
+        },
+        "B": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 53473,
+          "outputTokens": 1100,
+          "totalTokens": 54573,
+          "toolCalls": 14,
+          "wallSeconds": 25.271,
+          "indexSeconds": 5.849,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 3,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 17877,
+          "medianSeconds": 7.862,
+          "medianTools": 5
+        }
+      }
+    },
+    {
+      "id": "q4-summarize",
+      "kind": "概括",
+      "question": "运维手册把告警分成几个等级？最低一级是什么？",
+      "expected": "正式告警 P0–P4 共五级，最低 P4；P5 是演练标记，不计入真实告警统计。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 2,
+          "safeAbstentions": 0,
+          "failures": 1,
+          "inputTokens": 21695,
+          "outputTokens": 630,
+          "totalTokens": 22325,
+          "toolCalls": 6,
+          "wallSeconds": 14.294,
+          "indexSeconds": 0,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 2,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 7220,
+          "medianSeconds": 5.031,
+          "medianTools": 2
+        },
+        "B": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 55839,
+          "outputTokens": 884,
+          "totalTokens": 56723,
+          "toolCalls": 11,
+          "wallSeconds": 23.254,
+          "indexSeconds": 6.692,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 3,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 15716,
+          "medianSeconds": 8.035,
+          "medianTools": 3
+        }
+      }
+    },
+    {
+      "id": "q9-scan",
+      "kind": "扫描件",
+      "question": "签到表扫描件里一共有几个人出席，分别是谁？",
+      "expected": "五人：赵主任、陈默、王恺、李萌、刘倩。两页内容相同，不能重复计人数。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 2,
+          "safeAbstentions": 0,
+          "failures": 1,
+          "inputTokens": 194208,
+          "outputTokens": 6490,
+          "totalTokens": 200698,
+          "toolCalls": 41,
+          "wallSeconds": 343.821,
+          "indexSeconds": 0,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 2,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 62669,
+          "medianSeconds": 112.015,
+          "medianTools": 13
+        },
+        "B": {
+          "runs": 3,
+          "completed": 1,
+          "goalCompleted": 1,
+          "safeAbstentions": 0,
+          "failures": 2,
+          "inputTokens": 183271,
+          "outputTokens": 5712,
+          "totalTokens": 188983,
+          "toolCalls": 36,
+          "wallSeconds": 425.127,
+          "indexSeconds": 5.984,
+          "writesPassed": 0,
+          "writes": 0,
+          "goalWithUsableCitation": 1,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 64546,
+          "medianSeconds": 180.717,
+          "medianTools": 13
+        }
+      }
+    },
+    {
+      "id": "q11-update-md",
+      "kind": "修改",
+      "question": "把《财税_报销制度》里的报销时限从 30 日内改成 15 日内，直接改文件。",
+      "expected": "报销制度第 7 行将 30 日内改为 15 日内，其他内容保持一致。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 28054,
+          "outputTokens": 763,
+          "totalTokens": 28817,
+          "toolCalls": 9,
+          "wallSeconds": 59.616,
+          "indexSeconds": 0,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 2,
+          "citationIssues": 1,
+          "rateLimited": 0,
+          "medianInputTokens": 10068,
+          "medianSeconds": 12.981,
+          "medianTools": 3
+        },
+        "B": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 69739,
+          "outputTokens": 1240,
+          "totalTokens": 70979,
+          "toolCalls": 14,
+          "wallSeconds": 72.541,
+          "indexSeconds": 5.636,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 3,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 24699,
+          "medianSeconds": 9.501,
+          "medianTools": 5
+        }
+      }
+    },
+    {
+      "id": "q12-insert-md",
+      "kind": "新增",
+      "question": "在《技术_运维手册》的“四、演练要求”这一节末尾追加一行：“P6 供应商演练告警，不进入真实告警统计。”直接改文件。",
+      "expected": "在原第 17–18 行的第四节末尾追加指定 P6 文字，原有内容完整保留。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 35929,
+          "outputTokens": 1228,
+          "totalTokens": 37157,
+          "toolCalls": 12,
+          "wallSeconds": 58.666,
+          "indexSeconds": 0,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 2,
+          "citationIssues": 1,
+          "rateLimited": 0,
+          "medianInputTokens": 10575,
+          "medianSeconds": 21.731,
+          "medianTools": 3
+        },
+        "B": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 93138,
+          "outputTokens": 1672,
+          "totalTokens": 94810,
+          "toolCalls": 17,
+          "wallSeconds": 50.98,
+          "indexSeconds": 6.929,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 3,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 25634,
+          "medianSeconds": 14.691,
+          "medianTools": 5
+        }
+      }
+    },
+    {
+      "id": "q13-delete-csv",
+      "kind": "删除",
+      "question": "《技术_值班记录》里有一条作废记录，把那一整行删掉，直接改文件。",
+      "expected": "只删除原第 5 行的 2025-09-04 作废记录，保留表头及其他四条记录。",
+      "arms": {
+        "A": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 42674,
+          "outputTokens": 1686,
+          "totalTokens": 44360,
+          "toolCalls": 12,
+          "wallSeconds": 46.487,
+          "indexSeconds": 0,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 2,
+          "citationIssues": 1,
+          "rateLimited": 0,
+          "medianInputTokens": 13486,
+          "medianSeconds": 13.739,
+          "medianTools": 4
+        },
+        "B": {
+          "runs": 3,
+          "completed": 3,
+          "goalCompleted": 3,
+          "safeAbstentions": 0,
+          "failures": 0,
+          "inputTokens": 69853,
+          "outputTokens": 1471,
+          "totalTokens": 71324,
+          "toolCalls": 14,
+          "wallSeconds": 32.305,
+          "indexSeconds": 6.659,
+          "writesPassed": 3,
+          "writes": 3,
+          "goalWithUsableCitation": 3,
+          "citationIssues": 0,
+          "rateLimited": 0,
+          "medianInputTokens": 20150,
+          "medianSeconds": 10.328,
+          "medianTools": 4
+        }
+      }
+    }
+  ],
+  "runs": [
+    {
+      "arm": "A",
+      "qid": "q1-locate",
+      "run": 1,
+      "completed": false,
+      "exitCode": 1,
+      "rateLimited": false,
+      "promptTokens": 174740,
+      "outputTokens": 4435,
+      "cacheReadTokens": 101120,
+      "toolCalls": 21,
+      "wallMs": 180814,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "read"
+      ],
+      "answer": "",
+      "literalCheck": 0,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q1-locate|1",
+        "verdict": "incomplete",
+        "citation": "na",
+        "note": "180 秒内未完成。模型遇到中文提取/显示问题，反复尝试转换、渲染和 OCR；原 PDF 实际有可提取文本。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 7,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q1-locate",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 43899,
+      "outputTokens": 1396,
+      "cacheReadTokens": 24064,
+      "toolCalls": 9,
+      "wallMs": 50191,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash"
+      ],
+      "answer": "The 技术_规范全文.pdf file contains no content about backup strategy at all — it is a blank 60-page template consisting only of a table of contents placeholder (section numbers with dummy page references). None of the tech-related files mention a backup policy.\n\n## 结论\n\n技术规范全文（`技术_规范全文.pdf`）中没有关于备份策略的实质内容——该文件是 60 页的空白模板，仅含目录占位符（各章节号配虚拟页码），全文检索不到\"备份/全量/保留\"等任何相关信息，因此无法定位\"全量备份多久一次、保留多少天\"在第几页。依据：`技术_规范全文.pdf`（全文第 1–60 页均无备份策略描述）。",
+      "literalCheck": 0,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q1-locate|2",
+        "verdict": "fail",
+        "citation": "issue",
+        "note": "错误断言整份 60 页都是空白模板、没有备份策略；实际第 45 页有完整规定。pdftotext 未提取出中文，不能据此断言原文不存在。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 2,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q1-locate",
+      "run": 3,
+      "completed": false,
+      "exitCode": 1,
+      "rateLimited": false,
+      "promptTokens": 119660,
+      "outputTokens": 3956,
+      "cacheReadTokens": 56064,
+      "toolCalls": 18,
+      "wallMs": 180917,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash"
+      ],
+      "answer": "",
+      "literalCheck": 0,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q1-locate|3",
+        "verdict": "incomplete",
+        "citation": "na",
+        "note": "180 秒预算内未完成，没有最终回答；不能把渲染图片或中间提取当作定位成功。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 3,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q11-update-md",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 7831,
+      "outputTokens": 262,
+      "cacheReadTokens": 0,
+      "toolCalls": 3,
+      "wallMs": 41780,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "edit"
+      ],
+      "answer": "已按要求将报销时限从 30 日内改为 15 日内，依据为 `财税_报销制度.md` 第 7 条（费用报销条款）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q11-update-md|1",
+        "verdict": "pass",
+        "citation": "issue",
+        "note": "实际修改正确，但把文件第 7 行称为第 7 条；原文属于第二节，并无第七条。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q11-update-md",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 10155,
+      "outputTokens": 245,
+      "cacheReadTokens": 3584,
+      "toolCalls": 3,
+      "wallMs": 12981,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "edit"
+      ],
+      "answer": "已将报销时限从“30 日内”改为“15 日内”，依据为《财税_报销制度.md》第二节“报销时限”。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q11-update-md|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件只作预期的时限替换，其余文档未变，第二节引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q11-update-md",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 10068,
+      "outputTokens": 256,
+      "cacheReadTokens": 3840,
+      "toolCalls": 3,
+      "wallMs": 4855,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "edit"
+      ],
+      "answer": "已完成修改：将《财税_报销制度》中“报销时限”由“30 日内”改为“15 日内”。依据来自文件 `财税_报销制度.md` 的“二、报销时限”一节。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q11-update-md|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件修改正确，其他文档未变，第二节报销时限的引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q12-insert-md",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 10575,
+      "outputTokens": 413,
+      "cacheReadTokens": 6400,
+      "toolCalls": 3,
+      "wallMs": 5708,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "edit"
+      ],
+      "answer": "已在《技术_运维手册》的“四、演练要求”节末尾追加“P6 供应商演练告警，不进入真实告警统计。”。\n\n依据：文件 `技术_运维手册.md`，“四、演练要求”节（第13-14行，新增行为最后一行）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q12-insert-md|1",
+        "verdict": "pass",
+        "citation": "issue",
+        "note": "追加位置及完整文件内容正确，但答案声称演练要求在第 13–14 行；实际标题第 17 行、正文第 18 行，新增在其后。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q12-insert-md",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 10376,
+      "outputTokens": 310,
+      "cacheReadTokens": 4864,
+      "toolCalls": 3,
+      "wallMs": 21731,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "edit"
+      ],
+      "answer": "已完成，在《技术_运维手册》“四、演练要求”一节末尾追加了“P6 供应商演练告警，不进入真实告警统计。”这一行，依据来自文件 `技术_运维手册.md` 的“四、演练要求”一节。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q12-insert-md|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件追加正确，其余文档未变，引用的第四节可核对。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q12-insert-md",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 14978,
+      "outputTokens": 505,
+      "cacheReadTokens": 8192,
+      "toolCalls": 6,
+      "wallMs": 31227,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash"
+      ],
+      "answer": "已完成修改。\n\n已在《技术_运维手册.md》的“四、演练要求”一节末尾追加了“P6 供应商演练告警，不进入真实告警统计。”一行。依据来源：《技术_运维手册.md》第四节“四、演练要求”（文件末尾，第 19 行）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q12-insert-md|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "整份文件只追加预期一行，其余文档未变；第四节与新增第 19 行的引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q13-delete-csv",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 18237,
+      "outputTokens": 744,
+      "cacheReadTokens": 3840,
+      "toolCalls": 5,
+      "wallMs": 25433,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "bash",
+        "edit",
+        "read"
+      ],
+      "answer": "已删掉作废记录所在的那一整行（2025-09-04、白班、李萌、作废记录、作废），现将该 CSV 直接改写并保存，原文件已更新。\n\n依据文件：`技术_值班记录.csv`（第6行原为作废记录，已整行删除，现保留表头及5条有效记录）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q13-delete-csv|1",
+        "verdict": "pass",
+        "citation": "issue",
+        "note": "实际删除正确、其余文档未变；答案错误地称原第 6 行（实际第 5 行），并称保留 5 条有效记录（实际 4 条）。任务完成不等于答复每句话都正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q13-delete-csv",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 10951,
+      "outputTokens": 484,
+      "cacheReadTokens": 5120,
+      "toolCalls": 3,
+      "wallMs": 7315,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "write"
+      ],
+      "answer": "已删掉 `技术_值班记录.csv` 中那条作废记录（2025-09-04、李萌、作废记录、状态为\"作废\"）的整行，直接改写了文件，其余数据保留不变。依据：`技术_值班记录.csv` 第 5 行。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q13-delete-csv|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "只删去预期作废行，其他数据和文档未变；原第 5 行引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q13-delete-csv",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 13486,
+      "outputTokens": 458,
+      "cacheReadTokens": 3840,
+      "toolCalls": 4,
+      "wallMs": 13739,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read",
+        "edit",
+        "read"
+      ],
+      "answer": "已完成作废记录的删除。\n\n已从《技术_值班记录.csv》中删除\"2025-09-04,白班,李萌,作废记录,作废\"这一整行（即\"作废\"状态记录），依据为当前工作目录下《技术_值班记录.csv》，文件现仅保留表头及4条有效记录。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "A|q13-delete-csv|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整 CSV 删除正确，其他文档未变，保留四条有效记录的表述正确；虽未给行号，但完整日期与记录内容提供唯一可核对的位置。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q4-summarize",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 7220,
+      "outputTokens": 171,
+      "cacheReadTokens": 3584,
+      "toolCalls": 2,
+      "wallMs": 4063,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read"
+      ],
+      "answer": "运维手册把告警分成 5 个等级（P0–P4），最低一级是 **P4（例行巡检异常）**。依据来自《技术_运维手册.md》第一节\"一、告警分级\"表格。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q4-summarize|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "五级与最低 P4 正确，引用告警分级一节可核对。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q4-summarize",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 7150,
+      "outputTokens": 196,
+      "cacheReadTokens": 2304,
+      "toolCalls": 2,
+      "wallMs": 5031,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read"
+      ],
+      "answer": "运维手册把告警分成 6 个等级（P0 至 P5，其中 P5 仅用于演练编号）。最低一级是例行巡检异常（P4），对应\"非核心功能降级\"之上的最低处理等级；若把演练标记 P5 也计入，则 P4/P5 中 P4 为真实告警最低一级。\n\n依据：《技术_运维手册.md》\"一、告警分级\"表格及\"四、演练要求\"一节。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q4-summarize|2",
+        "verdict": "fail",
+        "citation": "exact",
+        "note": "把仅供演练编号、明确不计入真实告警统计的 P5 算成第六级，等级数量错误；真实等级为 P0–P4 五级。章节引用能定位，但结论错误，字面判分却误给满分。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q4-summarize",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 7325,
+      "outputTokens": 263,
+      "cacheReadTokens": 1280,
+      "toolCalls": 2,
+      "wallMs": 5200,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "read"
+      ],
+      "answer": "根据《技术_运维手册.md》（技术_运维手册.md 的\"一、告警分级\"章节），告警分为 P0 至 P4 共 5 个等级，另演练统一标记为 P5；最低一级（正式告警）是 P4（例行巡检异常），响应对应时限为\"次日\"。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q4-summarize|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "正确区分 P0–P4 正式等级与仅用于演练标记的 P5，最低 P4 及章节引用正确。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q9-scan",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 59158,
+      "outputTokens": 1907,
+      "cacheReadTokens": 23040,
+      "toolCalls": 13,
+      "wallMs": 80499,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash"
+      ],
+      "answer": "Both pages appear identical (page 2 is likely a duplicate of the scanned sign-in sheet). Both lists show the same 5 attendees.\n\nThe sign-in sheet (政府_签到表_扫描件.pdf, 第1页) records 5 attendees: 赵主任、陈默、王恺、李萌、刘倩。\n\nThe answer: 一共有5人出席，分别是赵主任、陈默、王恺、李萌、刘倩。依据来自《政府_签到表_扫描件.pdf》第1页（扫描件\"会议签到表\"出席名单，第2页内容与此相同）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q9-scan|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "实际调用 RapidOCR 并读取两页识别文本，五人姓名与扫描原图一致；两页为重复内容，没有重复计人数。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 2
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q9-scan",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 62669,
+      "outputTokens": 2000,
+      "cacheReadTokens": 34560,
+      "toolCalls": 13,
+      "wallMs": 112015,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "read",
+        "bash"
+      ],
+      "answer": "签到表扫描件中出席人数为 **5 人**，分别是：赵主任、陈默、王恺、李萌、刘倩。\n\n依据来自《政府_签到表_扫描件.pdf》（两页内容一致），见第 1 页\"出席\"一栏。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q9-scan|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "实际 OCR 提取了扫描名单，五人及姓名正确；两页内容相同，第 1 页出席栏引用可核对。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "A",
+      "qid": "q9-scan",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 72381,
+      "outputTokens": 2583,
+      "cacheReadTokens": 36352,
+      "toolCalls": 15,
+      "wallMs": 151307,
+      "indexMs": 0,
+      "tools": [
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read"
+      ],
+      "answer": "The OCR clearly read the sign-in sheet. Both pages show the same content. Let me verify the OCR result is reliable by checking a full list of OCR lines with coordinates to confirm accuracy.\n\nThe answer is clear: **5 people attended** — 赵主任、陈默、王恺、李荫、刘倩.\n\nThe scan has 2 identical pages (possibly a duplicate or two copies). The sign-in sheet scan (`政府_签到表_扫描件.pdf`) shows the attendance.\n\nLet me confirm page 1 is authoritative (identical to page 2 which is likely a copy).\n\n**结论：** 签到表扫描件（`政府_签到表_扫描件.pdf`）显示一共有 **5 人**出席，分别是：赵主任、陈默、王恺、李荫、刘倩。依据为该扫描件第 1 页\"出席\"一栏（扫描件共 2 页，两页内容一致）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "A|q9-scan|3",
+        "verdict": "fail",
+        "citation": "exact",
+        "note": "实际执行了 OCR，人数 5 正确，但把原图中的李萌答成李荫，姓名不准确，不能算名单识别成功。页码与出席栏引用本身正确。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q1-locate",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 17686,
+      "outputTokens": 337,
+      "cacheReadTokens": 2816,
+      "toolCalls": 4,
+      "wallMs": 10382,
+      "indexMs": 1959,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_search"
+      ],
+      "answer": "Found it. The backup policy is on page 45, section 4.7.\n\n**结论：** 技术规范规定**全量备份每周一次**，**保留 90 天**（增量备份每日一次）。依据来自《技术_规范全文.pdf》第 **45 页**，第 **4.7** 节\"备份策略\"。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q1-locate|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "每周全量、保留 90 天及第 45 页与原文一致。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q1-locate",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 17877,
+      "outputTokens": 373,
+      "cacheReadTokens": 7680,
+      "toolCalls": 5,
+      "wallMs": 7027,
+      "indexMs": 1853,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_outline",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_search"
+      ],
+      "answer": "Found the specific backup policy details on page 45.\n\n结论：技术规范规定的备份策略是\"全量备份每周一次，增量备份每日一次，保留 90 天\"，位于《技术_规范全文.pdf》第 45 页（4.7 节）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q1-locate|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "全量每周、保留 90 天及第 45 页与原文一致。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q1-locate",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 17910,
+      "outputTokens": 390,
+      "cacheReadTokens": 11264,
+      "toolCalls": 5,
+      "wallMs": 7862,
+      "indexMs": 2037,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_outline",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_search"
+      ],
+      "answer": "I found the answer.\n\n**结论：** 技术规范规定的备份策略为「全量备份每周一次，保留 90 天」（增量备份每日一次）。依据来自《技术_规范全文.pdf》第 45 页第 4.7 节。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q1-locate|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "每周全量、保留 90 天及第 45 页引用均与原文一致。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q11-update-md",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 20339,
+      "outputTokens": 363,
+      "cacheReadTokens": 0,
+      "toolCalls": 4,
+      "wallMs": 54086,
+      "indexMs": 2296,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已改好：报销时限由“30 日内”改为“15 日内”。\n\n依据：文件《财税_报销制度.md》第二节“二、报销时限”（第 7 段/行），现已直接修改完成。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q11-update-md|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "整份文件与 30 日改 15 日的预期一致，其余文档未变；第二节及第 7 行引用可核对。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q11-update-md",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 24699,
+      "outputTokens": 404,
+      "cacheReadTokens": 14336,
+      "toolCalls": 5,
+      "wallMs": 9501,
+      "indexMs": 1455,
+      "tools": [
+        "mcp__folio__folio_list",
+        "read",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已完成。《财税_报销制度.md》第二节“报销时限”中，已将“30 日内”改为“15 日内”，依据为文件第7行（第二节）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q11-update-md|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件修改正确，其余文档未变；第二节第 7 行引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q11-update-md",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 24701,
+      "outputTokens": 473,
+      "cacheReadTokens": 11776,
+      "toolCalls": 5,
+      "wallMs": 8954,
+      "indexMs": 1885,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_page",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已完成，报销时限已修改为“费用发生之日起 15 日内”。\n\n依据：《财税_报销制度.md》第 2 节“报销时限”（¶7）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q11-update-md|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件修改正确，其他文档未变；第二节和 ¶7/第 7 行引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q12-insert-md",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 46317,
+      "outputTokens": 796,
+      "cacheReadTokens": 30720,
+      "toolCalls": 8,
+      "wallMs": 14691,
+      "indexMs": 2396,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_outline",
+        "mcp__folio__folio_page",
+        "bash",
+        "read",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply",
+        "read"
+      ],
+      "answer": "已完成。已在《技术_运维手册.md》的“四、演练要求”一节末尾追加一行“P6 供应商演练告警，不进入真实告警统计。”，依据为文件技术_运维手册.md（该节，无页码/编号头的 md 文档）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q12-insert-md|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "追加位置、完整文件和引用的节名正确，其余文档未变；附带称 Markdown 无编号头的说法不准确，但并未引用错误的节或行。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q12-insert-md",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 25634,
+      "outputTokens": 466,
+      "cacheReadTokens": 14336,
+      "toolCalls": 5,
+      "wallMs": 27819,
+      "indexMs": 2358,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_outline",
+        "mcp__folio__folio_page",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已完成，在《技术_运维手册.md》的“四、演练要求”（¶17–¶18）一节末尾追加了“P6 供应商演练告警，不进入真实告警统计。”依据来自文件 技术_运维手册.md 的“四、演练要求”一节。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q12-insert-md|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件追加位置及内容正确，其余文档未变；演练要求位于第 17–18 行，引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q12-insert-md",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 21187,
+      "outputTokens": 410,
+      "cacheReadTokens": 10752,
+      "toolCalls": 4,
+      "wallMs": 8470,
+      "indexMs": 2175,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_page",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已完成。已在《技术_运维手册》的“四、演练要求”节末尾（¶18 之后）追加一行“P6 供应商演练告警，不进入真实告警统计。”，依据来自 `技术_运维手册.md` 的“四、演练要求”一节（¶17–¶18）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q12-insert-md|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整文件及追加位置正确，其余文档未变；第四节原 ¶17–¶18 与在 ¶18 后追加的引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q13-delete-csv",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 20054,
+      "outputTokens": 397,
+      "cacheReadTokens": 11264,
+      "toolCalls": 4,
+      "wallMs": 7614,
+      "indexMs": 2052,
+      "tools": [
+        "mcp__folio__folio_list",
+        "read",
+        "mcp__folio__folio_search",
+        "edit"
+      ],
+      "answer": "已删除《技术_值班记录》中的作废记录行（`2025-09-04,白班,李萌,作废记录,作废`），直接修改了文件。依据：`工作目录/技术_值班记录.csv` 第5行（¶5）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q13-delete-csv|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "只删除预期作废记录，完整 CSV 与预期一致，其余文档未变；原第 5 行引用正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q13-delete-csv",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 20150,
+      "outputTokens": 472,
+      "cacheReadTokens": 11008,
+      "toolCalls": 4,
+      "wallMs": 10328,
+      "indexMs": 2011,
+      "tools": [
+        "mcp__folio__folio_list",
+        "read",
+        "bash",
+        "bash"
+      ],
+      "answer": "已直接删除《技术_值班记录.csv》中\"2025-09-04,李萌,作废记录,作废\"那一整行，文件现只剩表头及 4 条有效记录。\n\n依据：`技术_值班记录.csv`（第 5 行，作废记录行「2025-09-04,白班,李萌,作废记录,作废」已移除）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q13-delete-csv|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整 CSV 删除正确，其余文档未变；原第 5 行及剩余四条有效记录的表述均正确。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q13-delete-csv",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 29649,
+      "outputTokens": 602,
+      "cacheReadTokens": 18688,
+      "toolCalls": 6,
+      "wallMs": 14363,
+      "indexMs": 2596,
+      "tools": [
+        "mcp__folio__folio_list",
+        "read",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_revise",
+        "mcp__folio__folio_apply"
+      ],
+      "answer": "已删除，结论：已将《技术_值班记录.csv》中状态为“作废”的整行记录（2025-09-04,白班,李萌,作废记录,作废）删除，依据来自该文件第 ¶5 行（全文共 6 行数据，现已剩 5 行）。",
+      "literalCheck": 1,
+      "fileCheck": {
+        "pass": true,
+        "missing": [],
+        "left": []
+      },
+      "review": {
+        "key": "B|q13-delete-csv|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "完整 CSV 删除正确，其他文档未变；¶5 引用正确。全文 6 行变 5 行包含表头，实际有效记录为四条。",
+        "writeIntegrity": {
+          "expectedWholeFile": true,
+          "unrelatedDocumentsUnchanged": true,
+          "unrelatedChanges": [],
+          "pass": true
+        }
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q4-summarize",
+      "run": 1,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 15610,
+      "outputTokens": 240,
+      "cacheReadTokens": 8960,
+      "toolCalls": 3,
+      "wallMs": 9351,
+      "indexMs": 1922,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_page"
+      ],
+      "answer": "运维手册把告警分成 5 个等级（P0、P1、P2、P3、P4）。最低一级是 P4（例行巡检异常，响应时限为次日，工单跟踪）。\n\n依据：技术_运维手册.md，「一、告警分级」一节（¶4–¶9）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q4-summarize|1",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "P0–P4 共五级，最低 P4；引用第一节与表格行可核对。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q4-summarize",
+      "run": 2,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 15716,
+      "outputTokens": 278,
+      "cacheReadTokens": 7424,
+      "toolCalls": 3,
+      "wallMs": 5868,
+      "indexMs": 2079,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_page"
+      ],
+      "answer": "告警分为 P0、P1、P2、P3、P4 共 5 个等级，最低一级是 **P4**（例行巡检异常，响应时限为次日）。\n\n依据来源：技术_运维手册.md \"一、告警分级\"一节（¶3–¶9）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q4-summarize|2",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "五个真实告警等级、最低 P4 及响应时限正确；引用第一节和相应行可核对。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q4-summarize",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 24513,
+      "outputTokens": 366,
+      "cacheReadTokens": 14336,
+      "toolCalls": 5,
+      "wallMs": 8035,
+      "indexMs": 2691,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_search",
+        "mcp__folio__folio_read",
+        "mcp__folio__folio_page"
+      ],
+      "answer": "运维手册把告警分成 5 个等级（P0–P4）；最低一级是 P4，含义为\"例行巡检异常\"，响应时限为次日。\n\n依据：《技术_运维手册.md》\"一、告警分级\"一节（¶4–¶9 表格）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q4-summarize|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "五个正式告警等级、最低 P4 及次日响应均正确，表格引用可核对。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q9-scan",
+      "run": 1,
+      "completed": false,
+      "exitCode": 1,
+      "rateLimited": false,
+      "promptTokens": 64546,
+      "outputTokens": 2320,
+      "cacheReadTokens": 27136,
+      "toolCalls": 14,
+      "wallMs": 181262,
+      "indexMs": 2312,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_page",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "mcp__folio__folio_page",
+        "mcp__folio__folio_search",
+        "bash"
+      ],
+      "answer": "",
+      "literalCheck": 0,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q9-scan|1",
+        "verdict": "incomplete",
+        "citation": "na",
+        "note": "拿到 Folio 无文本层状态后继续尝试原生工具，180 秒超时，没有最终答案。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 1,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q9-scan",
+      "run": 2,
+      "completed": false,
+      "exitCode": 1,
+      "rateLimited": false,
+      "promptTokens": 45809,
+      "outputTokens": 1358,
+      "cacheReadTokens": 18176,
+      "toolCalls": 9,
+      "wallMs": 180717,
+      "indexMs": 1617,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_page",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "bash"
+      ],
+      "answer": "",
+      "literalCheck": 0,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q9-scan|2",
+        "verdict": "incomplete",
+        "citation": "na",
+        "note": "180 秒超时，没有正常结束的最终回答，不能把中间读取或工具尝试当作识别成功。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    },
+    {
+      "arm": "B",
+      "qid": "q9-scan",
+      "run": 3,
+      "completed": true,
+      "exitCode": 0,
+      "rateLimited": false,
+      "promptTokens": 72916,
+      "outputTokens": 2034,
+      "cacheReadTokens": 43264,
+      "toolCalls": 13,
+      "wallMs": 63148,
+      "indexMs": 2055,
+      "tools": [
+        "mcp__folio__folio_list",
+        "mcp__folio__folio_page",
+        "bash",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "read",
+        "bash",
+        "bash",
+        "bash",
+        "read",
+        "bash"
+      ],
+      "answer": "Console shows mojibake but the OCR output matches the earlier UTF-8 file. The high-DPI OCR confirms the same content. The OCR reliably reads \"出席：赵主任、陈默、王恺、李萌、刘倩\" — 5 people.\n\nLet me clean up the temp files before concluding, per the instruction that all temp files should stay in the working directory (they already are in the work directory, which is fine).\n\n**结论**：签到表扫描件（2页均相同）显示共有 **5 人出席**：赵主任、陈默、王恺、李萌、刘倩。\n\n依据：`政府_签到表_扫描件.pdf` 第1页（第2页内容相同）的「出席」栏（经 OCR 识别）。",
+      "literalCheck": 1,
+      "fileCheck": null,
+      "review": {
+        "key": "B|q9-scan|3",
+        "verdict": "pass",
+        "citation": "exact",
+        "note": "调用原生 Python RapidOCR 并读取 UTF-8 识别结果，五人及姓名与原图一致，页码正确。这是代理使用外部 OCR 的成功，Folio 本身没有新增 OCR。",
+        "writeIntegrity": null
+      },
+      "pathGuard": {
+        "remapped": 0,
+        "blocked": 0
+      }
+    }
+  ]
+}

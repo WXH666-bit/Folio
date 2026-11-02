@@ -11,3 +11,6 @@ tests/tmp/
 tests/ab/runs*/
 __pycache__/
 *.pyc
+/data/
+/web/dist/
+/.vite/

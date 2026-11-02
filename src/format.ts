@@ -140,7 +140,7 @@ export function formatRevisions(revisions: Revision[], doc?: string): string {
   const pending = revisions.filter((r) => r.status === "pending").length;
   const head = `${revisions.length} revisions · ${pending} pending${doc ? ` · ${doc}` : ""}`;
   const rows = revisions.map((r) => {
-    const mark = r.status === "pending" ? "·" : r.status === "applied" ? "✓" : "!";
+    const mark = r.status === "pending" ? "·" : r.status === "applied" ? "✓" : r.status === "discarded" ? "× discarded" : "!";
     const arrow =
       r.action === "insert_after"
         ? `+after: ${clip(r.text)}`
