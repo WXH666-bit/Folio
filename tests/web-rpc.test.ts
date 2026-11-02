@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { JsonLines, RpcDriver, ownedEnvironment, piStatus, type WireEvent } from "../web/server/pi.js";
+import { JsonLines, RpcDriver, ownedEnvironment, piStatus, piStartupTimeout, type WireEvent } from "../web/server/pi.js";
 import { createApp } from "../web/server/app.js";
 import type { RunInfo } from "../web/shared.js";
 
@@ -15,6 +15,12 @@ const events:WireEvent[]=[];const driver=new RpcDriver(process.execPath,[fixture
 const wait=async(p:()=>boolean|Promise<boolean>)=>{for(let i=0;i<300;i++){if(await p())return;await new Promise(r=>setTimeout(r,10));}throw new Error("timed out");};
 await driver.prompt("开始");await wait(()=>events.length>0);assert.equal(events[0].assistantMessageEvent.delta,"真实中文");assert(!events.some(e=>e.type==="agent_settled"));await driver.abort();await wait(()=>events.some(e=>e.type==="agent_settled"));await driver.command("exit");await wait(()=>events.some(e=>e.type==="driver_error"));await driver.close();
 const env=ownedEnvironment({projectRoot:path.resolve("."),dataRoot:root,workspace:path.join(root,"workspace"),documents:root,indexHome:root,settings:{baseUrl:"http://localhost/v1",model:"test",apiKey:"private"}});
+assert.equal(piStartupTimeout("90"),90_000);assert.equal(piStartupTimeout("120"),120_000);
+for(const value of ["0","29","301","abc","90.5"])assert.throws(()=>piStartupTimeout(value));
+const slowFixture=path.join(root,"slow-start.cjs");
+await fs.writeFile(slowFixture,`require('node:readline').createInterface({input:process.stdin}).on('line',s=>{const c=JSON.parse(s);if(c.type==='get_state')setTimeout(()=>process.stdout.write(JSON.stringify({type:'response',id:c.id,success:true})+'\\n'),150);});`);
+const startupEvents:WireEvent[]=[];const slow=new RpcDriver(process.execPath,[slowFixture],{cwd:root,env:process.env},e=>startupEvents.push(e));
+try{await slow.initialize(2000);assert(startupEvents.some(e=>e.type==="startup_wait"));assert(!startupEvents.some(e=>e.type==="agent_settled"));await assert.rejects(slow.command("silent",{},20),/命令响应超时.*silent/);await assert.rejects(slow.initialize(20),/启动握手超时.*尚未接单/);}finally{await slow.close();}
 assert(env.HOME!.startsWith(root));assert(env.PI_CODING_AGENT_DIR!.startsWith(root));assert.equal(env.FOLIO_WEB_MODEL_KEY,"private");assert.equal((await piStatus(path.resolve("."))).version,"1.4.0");
 let emit:(e:WireEvent)=>void=()=>{},starts=0;
 const {app,library,workshop}=await createApp({dataRoot:path.join(root,"data"),agentFactory:async(_c,sink)=>{emit=sink;return{async prompt(){starts++;},async abort(){sink({type:"agent_settled",aborted:true});},async close(){}};}});

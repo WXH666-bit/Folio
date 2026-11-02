@@ -14,6 +14,12 @@ export interface AgentDriver {
 export interface AgentContext { projectRoot: string; dataRoot: string; workspace: string; documents: string; indexHome: string; settings: PrivateSettings; }
 export type AgentFactory = (context: AgentContext, emit: (event: WireEvent) => void) => Promise<AgentDriver>;
 
+export function piStartupTimeout(seconds = process.env.FOLIO_PI_STARTUP_TIMEOUT_SECONDS ?? "90") {
+  const value = Number(seconds);
+  if (!Number.isInteger(value) || value < 30 || value > 300) throw new Error("FOLIO_PI_STARTUP_TIMEOUT_SECONDS 必须是 30 到 300 的整数秒数");
+  return value * 1000;
+}
+
 /** Pi's framing is LF-only: Unicode U+2028/U+2029 are valid inside document text. */
 export class JsonLines {
   private decoder = new StringDecoder("utf8"); private pending = "";
@@ -53,15 +59,21 @@ export class RpcDriver implements AgentDriver {
     for (const req of this.requests.values()) { clearTimeout(req.timer); req.reject(error); }
     this.requests.clear(); if (notify && !this.closing) this.emit({ type: "driver_error", message: error.message });
   }
-  command(type: string, data: Record<string, unknown> = {}): Promise<WireEvent> {
+  command(type: string, data: Record<string, unknown> = {}, timeoutMs = 30_000): Promise<WireEvent> {
     const id = randomUUID();
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => { this.requests.delete(id); reject(new Error("pi 启动或命令响应超时")); }, 30_000);
+      const timer = setTimeout(() => { this.requests.delete(id); reject(new Error(type === "get_state" ? `pi 启动握手超时（已等待 ${timeoutMs / 1000} 秒，尚未接单）` : `pi 命令响应超时（${type}，${timeoutMs / 1000} 秒）`)); }, timeoutMs);
       this.requests.set(id, { resolve, reject, timer });
       this.child.stdin.write(JSON.stringify({ id, type, ...data }) + "\n", err => {
         if (err) { clearTimeout(timer); this.requests.delete(id); reject(err); }
       });
     });
+  }
+  async initialize(timeoutMs = piStartupTimeout()) {
+    this.emit({ type: "startup_wait", message: `正在启动独立 pi，最多等待 ${timeoutMs / 1000} 秒` });
+    const notice = setTimeout(() => this.emit({ type: "startup_wait", message: "独立 pi 仍在启动，正在使用启动缓冲；任务尚未接单" }), 30_000);
+    try { await this.command("get_state", {}, timeoutMs); }
+    finally { clearTimeout(notice); }
   }
   async prompt(message: string) { const result = await this.command("prompt", { message }); if (result.data?.disposition === "handled") throw new Error("此输入被 pi 当作命令处理，请用自然语言描述文档任务。"); }
   async abort() { await this.command("abort"); }
@@ -123,6 +135,6 @@ export const createPiAgent: AgentFactory = async (context, emit) => {
   const driver = new RpcDriver(process.execPath, [cli, "--mode", "rpc", "--continue", "--session-dir", sessions,
     "--model", `folio-web/${context.settings.model}`, "--tools", tools, "--no-context-files", "--no-skills", "--no-prompt-templates", "--thinking", "off", "--append-system-prompt", instructions],
     { cwd: context.documents, env }, emit);
-  try { await driver.command("get_state"); } catch (error) { await driver.close(); throw error; }
+  try { await driver.initialize(); } catch (error) { await driver.close(); throw error; }
   return driver;
 };

@@ -143,7 +143,8 @@ export class Comparisons {
     else if(event.type==="message_end"&&event.message?.role==="assistant"){
       const m=event.message;arm.answer=(m.content??[]).filter((v:any)=>v.type==="text").map((v:any)=>v.text).join("");r.nativeStop=m.stopReason;const usage=m.usage??{};arm.inputTokens+=(usage.input??0)+(usage.cacheRead??0)+(usage.cacheWrite??0);arm.outputTokens+=usage.output??0;arm.error=m.errorMessage;
       await emit({type:"answer",text:arm.answer,inputTokens:arm.inputTokens,outputTokens:arm.outputTokens});
-    }else if(event.type==="auto_retry_start")await emit({type:"notice",stage:"search",state:"waiting",message:"模型接口正在重试",detail:String(event.errorMessage??"")});
+    }else if(event.type==="startup_wait")await emit({type:"notice",stage:"inbox",state:"running",message:event.message});
+    else if(event.type==="auto_retry_start")await emit({type:"notice",stage:"search",state:"waiting",message:"模型接口正在重试",detail:String(event.errorMessage??"")});
     else if(event.type==="driver_error")await this.fail(c,"native",event.message);
     else if(event.type==="agent_settled"){
       const finalStatus=event.aborted?"cancelled":r.nativeStop==="stop"?"completed":"failed";arm.endedAt=at;if(finalStatus==="failed")arm.error??="模型没有正常结束";

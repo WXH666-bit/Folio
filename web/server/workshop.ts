@@ -151,7 +151,8 @@ export class Workshop {
       const usage = message.usage ?? {}; run.inputTokens += (usage.input ?? 0) + (usage.cacheRead ?? 0) + (usage.cacheWrite ?? 0); run.outputTokens += usage.output ?? 0;
       if (message.errorMessage) run.error = await this.redacted(message.errorMessage);
       await this.emit(run, { type: "answer", text: run.answer, inputTokens: run.inputTokens, outputTokens: run.outputTokens });
-    } else if (event.type === "auto_retry_start") await this.emit(run, { type: "notice", stage: "search", state: "waiting", message: "模型连接正在重试", detail: await this.redacted(String(event.errorMessage ?? "")) });
+    } else if (event.type === "startup_wait") await this.emit(run, { type: "notice", stage: "inbox", state: "running", message: event.message });
+    else if (event.type === "auto_retry_start") await this.emit(run, { type: "notice", stage: "search", state: "waiting", message: "模型连接正在重试", detail: await this.redacted(String(event.errorMessage ?? "")) });
     else if (event.type === "driver_error") { this.drivers.delete(ws); await this.failure(run, event.message); this.active.delete(ws); }
     else if (event.type === "agent_settled") {
       if (event.aborted) { run.status = "cancelled"; run.error = undefined; }
