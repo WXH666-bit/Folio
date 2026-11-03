@@ -7,7 +7,11 @@ for(const [index,script]of [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/
 const core=html.match(/<script id="director-core">([\s\S]*?)<\/script>/)[1];
 const context=vm.createContext({requestAnimationFrame:()=>1,cancelAnimationFrame(){}});
 vm.runInContext(core,context);
-const {compileEvents,describe,Clock,stateAt,timing,ROOMS,route,seat,desk}=context.TheaterCore;
+const {compileEvents,describe,Clock,stateAt,timing,ROOMS,route,seat,desk,reconcileSelection}=context.TheaterCore;
+const picked=reconcileSelection(new Set(['a']),new Set(['a','b']),[{id:'a',status:'ready'},{id:'b',status:'ready'},{id:'c',status:'ready'},{id:'scan',status:'no_text'}],true);assert.deepEqual(Array.from(picked),['a','c']);
+assert.deepEqual(Array.from(reconcileSelection(picked,new Set(['a','b','c']),[{id:'c',status:'ready',name:'renamed.md'}],true)),['c']);
+assert.deepEqual(Array.from(reconcileSelection(picked,new Set(['a','c']),[{id:'a',status:'parse_failed'}],true)),[]);
+const entry=await fs.readFile('web/client/index.html','utf8');assert(entry.includes('target.search=location.search'));assert(!entry.includes('main.tsx'));assert(!html.includes('回到工坊'));assert(html.includes('id="files-button"'));
 const elapsed=timing({startedAt:'2026-11-01T00:00:00Z',awaitingSince:'2026-11-01T00:00:05Z',confirmationMs:0},Date.parse('2026-11-01T00:00:10Z'));assert.equal(elapsed.execution,5000);assert.equal(elapsed.human,5000);
 assert.equal(stateAt([],'native'),'queued');assert.equal(stateAt([{arm:'native',type:'tool_start'}],'native'),'running');assert.equal(stateAt([{arm:'native',armStatus:'failed'}],'native'),'failed');
 for(const name of ['pdf','edit','delete']){
