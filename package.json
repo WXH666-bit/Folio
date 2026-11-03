@@ -25,6 +25,7 @@
     "fixtures": "D:\\python3.11\\python.exe tests/make-fixtures.py",
     "setup:compare": "node pi/setup-comparison.mjs",
     "test:compare": "tsx tests/comparison.test.ts",
+    "test:theater": "node tests/theater.test.mjs",
     "test:sandbox": "tsx tests/native-sandbox.test.ts",
     "record:compare": "tsx tests/record-comparison.ts"
   },
